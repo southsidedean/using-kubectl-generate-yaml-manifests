@@ -23,9 +23,9 @@ In this tutorial, we're going to examine how we can use the `kubectl` command *i
 
 [Kubernetes: Install Tools](https://kubernetes.io/docs/tasks/tools/)
 
-[]()
+[GitHub: cka-d-cluster-builder-lab](https://github.com/southsidedean/cka-d-cluster-builder-lab)
 
-[]()
+[GitHub: Deploying a Kubernetes In Docker (KIND) Cluster Using Podman on Ubuntu Linux](https://github.com/southsidedean/deploy-kind-using-podman-ubuntu)
 
 []()
 
@@ -40,10 +40,19 @@ In this tutorial, we're going to examine how we can use the `kubectl` command *i
 
 [Kubernetes: Install Tools](https://kubernetes.io/docs/tasks/tools/)
 
-You will need...
+[GitHub: cka-d-cluster-builder-lab](https://github.com/southsidedean/cka-d-cluster-builder-lab)
 
+[GitHub: Deploying a Kubernetes In Docker (KIND) Cluster Using Podman on Ubuntu Linux](https://github.com/southsidedean/deploy-kind-using-podman-ubuntu)
+
+You're going to need a Kubernetes environment to perform the steps in this tutorial.  If you have access to one already, you can use it.  If not, you'll need to create one.  I'v provided some resources in the links in this section.
+
+The first link, from the Kubernetes documentation, contains resources detailing several options for cluster installation.
+
+I've also provided links to two of my GitHub repositories with tutorials for creating both a `kubeadm` cluster and a Kubernetes In Docker, or KIND, cluster.  These will also work.
+
+When you have your cluster, test it:
 ```bash
-kubectl cluster-resources
+kubectl cluster-info
 ```
 
 *The examples in this guide come from an Ubuntu Linux 22.04 operating system environment with a Kubernetes 1.26.1 cluster configured with `kubeadm`.*
