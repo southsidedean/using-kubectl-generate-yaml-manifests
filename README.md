@@ -50,7 +50,7 @@ You're going to need a Kubernetes environment to perform the steps in this tutor
 
 The first link, from the Kubernetes documentation, contains resources detailing several options for cluster installation.
 
-I've also provided links to two of my GitHub repositories with tutorials for creating both a `kubeadm` cluster and a Kubernetes In Docker, or KIND, cluster.  These will also work for this tutorial.
+I've also provided links to two of my GitHub repositories with tutorials, one for creating a `kubeadm` cluster and a second for creating a Kubernetes In Docker, or KIND, cluster.  Either of these will also work for this tutorial.
 
 When you have your cluster, test it:
 ```bash
@@ -75,7 +75,7 @@ To further debug and diagnose cluster problems, use 'kubectl cluster-info dump'.
 
 [Kubernetes: kubectl Cheat Sheet](https://kubernetes.io/docs/reference/kubectl/cheatsheet/)
 
-
+The primary tool you're going to use to interact with your Kubernetes cluster, both in this tutorial and the CKA/CKAD exams, is `kubectl`.  The `kubectl` command gives us a user-friendly (or user-friendlier) method of interacting with the Kubernetes API.
 
 ```bash
 kubectl --help
@@ -120,14 +120,55 @@ Try it again.  Create the `nginx-pod` imperatively:
 kubectl run nginx-pod --image nginx:latest --namespace imperative --port=80
 ```
 
-You should get `pod/nginx-pod created`.  Checking our work:
+You should get `pod/nginx-pod created`.
+
+Checking our work:
+```bash
+kubectl get pod --namespace imperative -o wide
+```
+
+**Sample Output:**
+```bash
+$ kubectl get pod --namespace imperative -o wide
+
+NAME        READY   STATUS    RESTARTS   AGE   IP                NODE             NOMINATED NODE   READINESS GATES
+nginx-pod   1/1     Running   0          44m   192.168.126.200   worker-node-01   <none>           <none>
+```
+
 
 ```bash
-$ kubectl get pod --namespace imperative
-
-NAME        READY   STATUS    RESTARTS   AGE
-nginx-pod   1/1     Running   0          30s
+curl http://<POD_IP>
 ```
+
+**Sample Output:**
+```bash
+$ curl http://192.168.126.200
+
+<!DOCTYPE html>
+<html>
+<head>
+<title>Welcome to nginx!</title>
+<style>
+html { color-scheme: light dark; }
+body { width: 35em; margin: 0 auto;
+font-family: Tahoma, Verdana, Arial, sans-serif; }
+</style>
+</head>
+<body>
+<h1>Welcome to nginx!</h1>
+<p>If you see this page, the nginx web server is successfully installed and
+working. Further configuration is required.</p>
+
+<p>For online documentation and support please refer to
+<a href="http://nginx.org/">nginx.org</a>.<br/>
+Commercial support is available at
+<a href="http://nginx.com/">nginx.com</a>.</p>
+
+<p><em>Thank you for using nginx.</em></p>
+</body>
+</html>
+```
+
 
 ***Transition***
 
