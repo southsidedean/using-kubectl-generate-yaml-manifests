@@ -17,11 +17,11 @@ In this tutorial, we're going to examine how we can use the kubectl command impe
 
 [Imperative vs. Declarative — a Kubernetes Tutorial](https://medium.com/payscale-tech/imperative-vs-declarative-a-kubernetes-tutorial-4be66c5d8914)
 
-[]()
+[Command line tool (kubectl)](https://kubernetes.io/docs/reference/kubectl/)
 
-[]()
+[kubectl Cheat Sheet](https://kubernetes.io/docs/reference/kubectl/cheatsheet/)
 
-[]()
+[Kubernetes: Install Tools](https://kubernetes.io/docs/tasks/tools/)
 
 []()
 
@@ -38,9 +38,59 @@ In this tutorial, we're going to examine how we can use the kubectl command impe
 
 ## Prerequisites
 
+[Kubernetes: Install Tools](https://kubernetes.io/docs/tasks/tools/)
+
 You will need...
 
-## Step 1
+```bash
+kubectl cluster-resources
+```
+
+*The examples in this guide come from an Ubuntu Linux 22.04 operating system environment and a Kubernetes 1.26.1 cluster configured with `kubeadm`.*
+
+## Exploring the `kubectl` Command
+
+
+
+```bash
+kubectl --help
+```
+
+```bash
+kubectl api-resources
+```
+
+```bash
+kubectl run --help
+```
+
+***Transition***
+
+### Step 2
+
+
+
+***Transition***
+
+### Step 2
+
+
+
+***Transition***
+
+### Step 2
+
+
+
+***Transition***
+
+### Step 2
+
+
+
+***Transition***
+
+### Step 2
 
 
 
