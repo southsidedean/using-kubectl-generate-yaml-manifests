@@ -172,31 +172,61 @@ Commercial support is available at
 
 ***Transition***
 
-### Step 2
+### Creating Pod Manifests Using the `kubectl run` Command
 
 
 
 ***Transition***
 
-### Step 2
+### Creating Deployment Manifests Using the `kubectl create` Command
 
 
 
 ***Transition***
 
-### Step 2
+### Creating Service Manifests Using the `kubectl create` Command
 
 
 
 ***Transition***
 
-### Step 2
+### Section
 
 
 
 ***Transition***
 
-### Step 2
+### Section
+
+
+
+***Transition***
+
+### Section
+
+
+
+***Transition***
+
+### Section
+
+
+
+***Transition***
+
+### Section
+
+
+
+***Transition***
+
+### Section
+
+
+
+***Transition***
+
+### Practice Exercises
 
 
 
