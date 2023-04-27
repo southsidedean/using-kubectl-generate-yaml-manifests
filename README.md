@@ -628,7 +628,7 @@ kubectl get pod --namespace imperative -o wide
 $ kubectl get pod --namespace imperative -o wide
 
 NAME        READY   STATUS    RESTARTS   AGE   IP                NODE             NOMINATED NODE   READINESS GATES
-nginx-pod   1/1     Running   0          44m   192.168.126.200   worker-node-01   <none>           <none>
+nginx-pod   1/1     Running   0          10s   192.168.126.201   worker-node-01   <none>           <none>
 ```
 
 You can dig deeper and get more information using the `kubectl describe` command.
@@ -640,8 +640,64 @@ kubectl describe pod nginx-pod --namespace imperative
 
 **Sample Output:**
 ```bash
+$ kubectl describe pod nginx-pod --namespace imperative
 
+Name:             nginx-pod
+Namespace:        imperative
+Priority:         0
+Service Account:  default
+Node:             worker-node-01/10.0.1.204
+Start Time:       Thu, 27 Apr 2023 18:49:16 +0000
+Labels:           run=nginx-pod
+Annotations:      cni.projectcalico.org/containerID: 69fa1b2e11018aa307d1ee64fd99c3ba6c1d91f0f74ffa0a40eb93c0560ae041
+                  cni.projectcalico.org/podIP: 192.168.126.201/32
+                  cni.projectcalico.org/podIPs: 192.168.126.201/32
+Status:           Running
+IP:               192.168.126.201
+IPs:
+  IP:  192.168.126.201
+Containers:
+  nginx-pod:
+    Container ID:   containerd://e66a03ed5344e3c6927369774a35df446ee93c937ee038453afd5e297e79c5d7
+    Image:          nginx:latest
+    Image ID:       docker.io/library/nginx@sha256:63b44e8ddb83d5dd8020327c1f40436e37a6fffd3ef2498a6204df23be6e7e94
+    Port:           80/TCP
+    Host Port:      0/TCP
+    State:          Running
+      Started:      Thu, 27 Apr 2023 18:49:18 +0000
+    Ready:          True
+    Restart Count:  0
+    Environment:    <none>
+    Mounts:
+      /var/run/secrets/kubernetes.io/serviceaccount from kube-api-access-vbfgp (ro)
+Conditions:
+  Type              Status
+  Initialized       True 
+  Ready             True 
+  ContainersReady   True 
+  PodScheduled      True 
+Volumes:
+  kube-api-access-vbfgp:
+    Type:                    Projected (a volume that contains injected data from multiple sources)
+    TokenExpirationSeconds:  3607
+    ConfigMapName:           kube-root-ca.crt
+    ConfigMapOptional:       <nil>
+    DownwardAPI:             true
+QoS Class:                   BestEffort
+Node-Selectors:              <none>
+Tolerations:                 node.kubernetes.io/not-ready:NoExecute op=Exists for 300s
+                             node.kubernetes.io/unreachable:NoExecute op=Exists for 300s
+Events:
+  Type    Reason     Age   From               Message
+  ----    ------     ----  ----               -------
+  Normal  Scheduled  51s   default-scheduler  Successfully assigned imperative/nginx-pod to worker-node-01
+  Normal  Pulling    50s   kubelet            Pulling image "nginx:latest"
+  Normal  Pulled     50s   kubelet            Successfully pulled image "nginx:latest" in 399.613484ms (399.621888ms including waiting)
+  Normal  Created    50s   kubelet            Created container nginx-pod
+  Normal  Started    49s   kubelet            Started container nginx-pod
 ```
+
+Using `kubectl describe` provides you with a thorough description of the Pod.
 
 Kubernetes says the status of our `nginx-pod` pod is good. Let's look at it from another angle. Use the `curl` command to test the NGINX server in your pod.
 
@@ -652,7 +708,7 @@ curl http://<POD_IP>
 
 **Sample Output:**
 ```bash
-$ curl http://192.168.126.200
+$ curl http://192.168.126.201
 
 <!DOCTYPE html>
 <html>
@@ -696,37 +752,52 @@ Create the `declarative` namespace:
 kubectl create namespace declarative --dry-run=client --output=yaml > declarative-ns.yaml
 ```
 
-**Sample Output:**
-```bash
-
-```
-
+Checking our work:
 ```bash
 cat declarative-ns.yaml
 ```
 
 **Sample Output:**
 ```bash
+$ cat declarative-ns.yaml
 
+apiVersion: v1
+kind: Namespace
+metadata:
+  creationTimestamp: null
+  name: declarative
+spec: {}
+status: {}
 ```
 
+Now, let's use the YAML manifest to create our namespace:
 ```bash
 kubectl create -f declarative-ns.yaml
 ```
 
 **Sample Output:**
 ```bash
+$ kubectl create -f declarative-ns.yaml
 
+namespace/declarative created
 ```
 
-
+Checking our work:
 ```bash
 kubectl get ns
 ```
 
 **Sample Output:**
 ```bash
+$ kubectl get ns
 
+NAME              STATUS   AGE
+declarative       Active   23s
+default           Active   7d3h
+imperative        Active   5m7s
+kube-node-lease   Active   7d3h
+kube-public       Active   7d3h
+kube-system       Active   7d3h
 ```
 
 
@@ -741,18 +812,33 @@ kubectl get ns
 kubectl run nginx-pod --image nginx:latest --namespace declarative --port=80 --dry-run=client --output=yaml > nginx-pod.yaml
 ```
 
-**Sample Output:**
-```bash
-
-```
-
+Checking our work:
 ```bash
 cat nginx-pod.yaml
 ```
 
 **Sample Output:**
 ```bash
+$ cat nginx-pod.yaml
 
+apiVersion: v1
+kind: Pod
+metadata:
+  creationTimestamp: null
+  labels:
+    run: nginx-pod
+  name: nginx-pod
+  namespace: declarative
+spec:
+  containers:
+  - image: nginx:latest
+    name: nginx-pod
+    ports:
+    - containerPort: 80
+    resources: {}
+  dnsPolicy: ClusterFirst
+  restartPolicy: Always
+status: {}
 ```
 
 ```bash
@@ -768,22 +854,13 @@ kubectl get pod --namespace declarative -o wide
 
 **Sample Output:**
 ```bash
+$ kubectl get pod --namespace declarative -o wide
 
+NAME        READY   STATUS    RESTARTS   AGE   IP                NODE             NOMINATED NODE   READINESS GATES
+nginx-pod   1/1     Running   0          13s   192.168.126.202   worker-node-01   <none>           <none>
 ```
 
-You can dig deeper and get more information using the `kubectl describe` command.
-
-More information on our pod:
-```bash
-kubectl describe pod nginx-pod --namespace declarative
-```
-
-**Sample Output:**
-```bash
-
-```
-
-Kubernetes says the status of our `nginx-pod` pod is good. Let's look at it from another angle. Use the `curl` command to test the NGINX server in your pod.
+Kubernetes reports the status of our `nginx-pod` pod as `Running`. Let's look at it from another angle. Use the `curl` command to test the NGINX server in your pod.
 
 Test using `curl`, replace with your pod's IP address:
 ```bash
@@ -792,7 +869,7 @@ curl http://<POD_IP>
 
 **Sample Output:**
 ```bash
-$ curl http://192.168.126.200
+$ curl http://192.168.126.202
 
 <!DOCTYPE html>
 <html>
@@ -829,77 +906,283 @@ The NGINX web server in our `nginx-pod` Pod responds with the default web page. 
 
 
 
+
 ```bash
-kubectl 
+kubectl create deploy --help
 ```
 
 **Sample Output:**
 ```bash
+$ kubectl create deploy --help
 
+Create a deployment with the specified name.
+
+Aliases:
+deployment, deploy
+
+Examples:
+  # Create a deployment named my-dep that runs the busybox image
+  kubectl create deployment my-dep --image=busybox
+  
+  # Create a deployment with a command
+  kubectl create deployment my-dep --image=busybox -- date
+  
+  # Create a deployment named my-dep that runs the nginx image with 3 replicas
+  kubectl create deployment my-dep --image=nginx --replicas=3
+  
+  # Create a deployment named my-dep that runs the busybox image and expose port
+5701
+  kubectl create deployment my-dep --image=busybox --port=5701
+
+Options:
+    --allow-missing-template-keys=true:
+	If true, ignore any errors in templates when a field or map key is
+	missing in the template. Only applies to golang and jsonpath output
+	formats.
+
+    --dry-run='none':
+	Must be "none", "server", or "client". If client strategy, only print
+	the object that would be sent, without sending it. If server strategy,
+	submit server-side request without persisting the resource.
+
+    --field-manager='kubectl-create':
+	Name of the manager used to track field ownership.
+
+    --image=[]:
+	Image names to run.
+
+    -o, --output='':
+	Output format. One of: (json, yaml, name, go-template,
+	go-template-file, template, templatefile, jsonpath, jsonpath-as-json,
+	jsonpath-file).
+
+    --port=-1:
+	The port that this container exposes.
+
+    -r, --replicas=1:
+	Number of replicas to create. Default is 1.
+
+    --save-config=false:
+	If true, the configuration of current object will be saved in its
+	annotation. Otherwise, the annotation will be unchanged. This flag is
+	useful when you want to perform kubectl apply on this object in the
+	future.
+
+    --show-managed-fields=false:
+	If true, keep the managedFields when printing objects in JSON or YAML
+	format.
+
+    --template='':
+	Template string or path to template file to use when -o=go-template,
+	-o=go-template-file. The template format is golang templates
+	[http://golang.org/pkg/text/template/#pkg-overview].
+
+    --validate='strict':
+	Must be one of: strict (or true), warn, ignore (or false). 		"true" or
+	"strict" will use a schema to validate the input and fail the request
+	if invalid. It will perform server side validation if
+	ServerSideFieldValidation is enabled on the api-server, but will fall
+	back to less reliable client-side validation if not. 		"warn" will
+	warn about unknown or duplicate fields without blocking the request if
+	server-side field validation is enabled on the API server, and behave
+	as "ignore" otherwise. 		"false" or "ignore" will not perform any
+	schema validation, silently dropping any unknown or duplicate fields.
+
+Usage:
+  kubectl create deployment NAME --image=image -- [COMMAND] [args...] [options]
+
+Use "kubectl options" for a list of global command-line options (applies to all
+commands).
 ```
 
+
+Create the `my-nginx-deployment` namespace:
 ```bash
-kubectl 
+kubectl create namespace my-nginx-namespace --dry-run=client --output=yaml > my-nginx-namespace.yaml
+```
+
+Checking our work:
+```bash
+cat my-nginx-namespace.yaml
 ```
 
 **Sample Output:**
 ```bash
+$ cat my-nginx-namespace.yaml
 
+apiVersion: v1
+kind: Namespace
+metadata:
+  creationTimestamp: null
+  name: my-nginx-namespace
+spec: {}
+status: {}
 ```
 
 ```bash
-kubectl 
+kubectl create deployment my-nginx-deployment --image=nginx:latest --namespace my-nginx-namespace --replicas=3 --port=80 --dry-run=client --output=yaml > my-nginx-deployment.yaml
+```
+
+```bash
+cat my-nginx-deployment.yaml
 ```
 
 **Sample Output:**
 ```bash
+$ cat my-nginx-deployment.yaml
 
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: my-nginx-deployment
+  name: my-nginx-deployment
+  namespace: my-nginx-namespace
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: my-nginx-deployment
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: my-nginx-deployment
+    spec:
+      containers:
+      - image: nginx:latest
+        name: nginx
+        ports:
+        - containerPort: 80
+        resources: {}
+status: {}
 ```
 
 ```bash
-kubectl 
+kubectl create -f my-nginx-namespace.yaml ; kubectl create -f my-nginx-deployment.yaml
 ```
 
 **Sample Output:**
 ```bash
+$ kubectl create -f my-nginx-namespace.yaml ; kubectl create -f my-nginx-deployment.yaml
 
+namespace/my-nginx-namespace created
+deployment.apps/my-nginx-deployment created
 ```
 
 ```bash
-kubectl 
+kubectl get all -n my-nginx-namespace
 ```
 
 **Sample Output:**
 ```bash
+$ kubectl get all -n my-nginx-namespace
 
+NAME                                      READY   STATUS    RESTARTS   AGE
+pod/my-nginx-deployment-9cbcd46b4-42n2q   1/1     Running   0          55s
+pod/my-nginx-deployment-9cbcd46b4-7nmn8   1/1     Running   0          55s
+pod/my-nginx-deployment-9cbcd46b4-xt89j   1/1     Running   0          55s
+
+NAME                                  READY   UP-TO-DATE   AVAILABLE   AGE
+deployment.apps/my-nginx-deployment   3/3     3            3           55s
+
+NAME                                            DESIRED   CURRENT   READY   AGE
+replicaset.apps/my-nginx-deployment-9cbcd46b4   3         3         3       55s
 ```
 
 ```bash
-kubectl 
+kubectl get pods -o wide -n my-nginx-namespace
 ```
 
 **Sample Output:**
 ```bash
+$ kubectl get pods -o wide -n my-nginx-namespace
 
+NAME                                  READY   STATUS    RESTARTS   AGE     IP                NODE               NOMINATED NODE   READINESS GATES
+my-nginx-deployment-9cbcd46b4-42n2q   1/1     Running   0          2m10s   192.168.173.196   control-plane-01   <none>           <none>
+my-nginx-deployment-9cbcd46b4-7nmn8   1/1     Running   0          2m10s   192.168.126.204   worker-node-01     <none>           <none>
+my-nginx-deployment-9cbcd46b4-xt89j   1/1     Running   0          2m10s   192.168.126.203   worker-node-01     <none>           <none>
 ```
 
+Test using `curl`, replace with any of your three pods; IP addresses:
 ```bash
-kubectl 
+curl http://<POD_IP>
 ```
 
 **Sample Output:**
 ```bash
+$ curl http://192.168.126.203
 
+<!DOCTYPE html>
+<html>
+<head>
+<title>Welcome to nginx!</title>
+<style>
+html { color-scheme: light dark; }
+body { width: 35em; margin: 0 auto;
+font-family: Tahoma, Verdana, Arial, sans-serif; }
+</style>
+</head>
+<body>
+<h1>Welcome to nginx!</h1>
+<p>If you see this page, the nginx web server is successfully installed and
+working. Further configuration is required.</p>
+
+<p>For online documentation and support please refer to
+<a href="http://nginx.org/">nginx.org</a>.<br/>
+Commercial support is available at
+<a href="http://nginx.com/">nginx.com</a>.</p>
+
+<p><em>Thank you for using nginx.</em></p>
+</body>
+</html>
 ```
+
+*Repeat as desired, with the other IP addresses.*
+
+The NGINX web server in our `nginx-pod` Pods respond with the default web page. Everything appears to be working as expected with our `my-nginx-deployment` deployment.
+
 
 
 ***Transition***
 
-### Creating Service Manifests Using the `kubectl create` Command
+### Creating a Service Manifest Using the `kubectl create` Command
+
 
 
 ```bash
-kubectl 
+kubectl create svc --help
+```
+
+**Sample Output:**
+```bash
+$ kubectl create svc --help
+
+Create a service using a specified subcommand.
+
+Aliases:
+service, svc
+
+Available Commands:
+  clusterip      Create a ClusterIP service
+  externalname   Create an ExternalName service
+  loadbalancer   Create a LoadBalancer service
+  nodeport       Create a NodePort service
+
+Usage:
+  kubectl create service [flags] [options]
+
+Use "kubectl <command> --help" for more information about a given command.
+Use "kubectl options" for a list of global command-line options (applies to all
+commands).
+```
+
+
+
+```bash
+kubectl create svc clusterip --help
 ```
 
 **Sample Output:**
@@ -907,8 +1190,17 @@ kubectl
 
 ```
 
+**Sample Output:**
 ```bash
-kubectl 
+$ kubectl get svc -A
+
+NAMESPACE     NAME         TYPE        CLUSTER-IP   EXTERNAL-IP   PORT(S)                  AGE
+default       kubernetes   ClusterIP   10.96.0.1    <none>        443/TCP                  7d4h
+kube-system   kube-dns     ClusterIP   10.96.0.10   <none>        53/UDP,53/TCP,9153/TCP   7d4h
+```
+
+```bash
+kubectl create svc --help
 ```
 
 **Sample Output:**
