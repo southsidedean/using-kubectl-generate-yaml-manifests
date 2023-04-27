@@ -33,6 +33,8 @@ In this tutorial, we're going to get *hands-on* with using the `kubectl` command
 
 [GitHub: Deploying a Kubernetes In Docker (KIND) Cluster Using Podman on Ubuntu Linux](https://github.com/southsidedean/deploy-kind-using-podman-ubuntu)
 
+[Kubernetes: Managing Kubernetes Objects Using Imperative Commands](https://kubernetes.io/docs/tasks/manage-kubernetes-objects/imperative-command/)
+
 []()
 
 []()
@@ -590,6 +592,8 @@ Take some time, explore the `kubectl` command, the built-in help documentation, 
 ***Now that you've warmed up with some `kubectl` exercises, it's time to put `kubectl` to use.***
 
 ### Creating a Pod Imperatively Using the `kubectl run` Command
+
+[Kubernetes: Managing Kubernetes Objects Using Imperative Commands](https://kubernetes.io/docs/tasks/manage-kubernetes-objects/imperative-command/)
 
 Quite often, you just want to create a *straightforward* Kubernetes object, like a Pod, without having to write a manifest and feed it to Kubernetes. You can, using the `kubectl` command imperatively.
 
