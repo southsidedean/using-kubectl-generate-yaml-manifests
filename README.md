@@ -155,7 +155,11 @@ kube-system       Active   6d22h
 
 [Kubernetes: kubectl Cheat Sheet](https://kubernetes.io/docs/reference/kubectl/cheatsheet/)
 
-The `kubectl` command, the primary tool you're going to use to interact with your Kubernetes cluster, both in this tutorial and the **CKA/CKAD** exams, provides a user-friendly, *or user-friendlier*, method of interacting with the Kubernetes API. Let's take a look at the `kubectl` command.
+The `kubectl` command, the primary tool you're going to use to interact with your Kubernetes cluster, both in this tutorial and the **CKA/CKAD** exams, provides a user-friendly, *or user-friendlier*, method of interacting with the Kubernetes API.
+
+### Kubernetes Help
+
+Let's take a look at the `kubectl` command, starting at the top.
 
 Top-level help:
 ```bash
@@ -236,7 +240,7 @@ Use "kubectl <command> --help" for more information about a given command.
 Use "kubectl options" for a list of global command-line options (applies to all commands).
 ```
 
-This provides you with a great high-level view of all the commands available in `kubectl`. You can dig down further by adding the command.
+The `kubectl --help` command provides you with a great high-level view of all the commands available to `kubectl`. You can dig down further by adding the command.
 
 Drilling down, into the `kubectl run` command:
 ```bash
@@ -380,7 +384,9 @@ This view gives you a high-level explanation of the command, usage examples and 
 
 Go ahead, play around, get familiar with the help functionality in the `kubectl` command. It's the fastest documentation for `kubectl`, both when taking the exams and for day-to-day use.
 
-Kubernetes API resources, another part of the `kubectl` command to understand, can be viewed using the `kubectl api-resources` command.
+### Kubernetes API Resources
+
+Kubernetes API resources, another part of the `kubectl` command you should understand, can be viewed using the `kubectl api-resources` command.
 
 Listing available API resources:
 ```bash
@@ -468,38 +474,106 @@ volumeattachments                              storage.k8s.io/v1                
 
 
 
+More information, via the `kubectl explain` command:
 ```bash
-kubectl 
+kubectl explain deploy
 ```
 
 **Sample Output:**
 ```bash
+$ kubectl explain deploy
 
+KIND:     Deployment
+VERSION:  apps/v1
+
+DESCRIPTION:
+     Deployment enables declarative updates for Pods and ReplicaSets.
+
+FIELDS:
+   apiVersion	<string>
+     APIVersion defines the versioned schema of this representation of an
+     object. Servers should convert recognized schemas to the latest internal
+     value, and may reject unrecognized values. More info:
+     https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources
+
+   kind	<string>
+     Kind is a string value representing the REST resource this object
+     represents. Servers may infer this from the endpoint the client submits
+     requests to. Cannot be updated. In CamelCase. More info:
+     https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
+
+   metadata	<Object>
+     Standard object's metadata. More info:
+     https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata
+
+   spec	<Object>
+     Specification of the desired behavior of the Deployment.
+
+   status	<Object>
+     Most recently observed status of the Deployment.
 ```
 
+
+
 ```bash
-kubectl 
+kubectl get deploy
 ```
 
 **Sample Output:**
 ```bash
+$ kubectl get deploy
 
+No resources found in default namespace.
 ```
 
 ```bash
-kubectl 
+kubectl get deploy -A
 ```
 
 **Sample Output:**
 ```bash
+$ kubectl get deploy -A
 
+NAMESPACE     NAME                      READY   UP-TO-DATE   AVAILABLE   AGE
+kube-system   calico-kube-controllers   1/1     1            1           6d23h
+kube-system   coredns                   2/2     2            2           6d23h
+```
+
+```bash
+kubectl get deploy,rs,pod -A
+```
+
+**Sample Output:**
+```bash
+$ kubectl get deploy,rs,pod -A
+
+NAMESPACE     NAME                                      READY   UP-TO-DATE   AVAILABLE   AGE
+kube-system   deployment.apps/calico-kube-controllers   1/1     1            1           6d23h
+kube-system   deployment.apps/coredns                   2/2     2            2           6d23h
+
+NAMESPACE     NAME                                                DESIRED   CURRENT   READY   AGE
+kube-system   replicaset.apps/calico-kube-controllers-57b57c56f   1         1         1       6d23h
+kube-system   replicaset.apps/coredns-787d4945fb                  2         2         2       6d23h
+
+NAMESPACE     NAME                                           READY   STATUS    RESTARTS   AGE
+kube-system   pod/calico-kube-controllers-57b57c56f-4hvfl    1/1     Running   0          6d23h
+kube-system   pod/calico-node-s28hb                          1/1     Running   0          6d23h
+kube-system   pod/calico-node-tqb6g                          1/1     Running   0          6d23h
+kube-system   pod/coredns-787d4945fb-cg5wh                   1/1     Running   0          6d23h
+kube-system   pod/coredns-787d4945fb-xdbll                   1/1     Running   0          6d23h
+kube-system   pod/etcd-control-plane-01                      1/1     Running   0          6d23h
+kube-system   pod/kube-apiserver-control-plane-01            1/1     Running   0          6d23h
+kube-system   pod/kube-controller-manager-control-plane-01   1/1     Running   0          6d23h
+kube-system   pod/kube-proxy-blgcf                           1/1     Running   0          6d23h
+kube-system   pod/kube-proxy-t9wb4                           1/1     Running   0          6d23h
+kube-system   pod/kube-scheduler-control-plane-01            1/1     Running   0          6d23h
 ```
 
 
 
 ***Transition***
 
-### Creating Pods Using the `kubectl run` Command
+### Creating Pods Imperatively Using the `kubectl run` Command
 
 
 
@@ -737,7 +811,7 @@ kubectl
 
 ***Transition***
 
-### Section
+### Scaling a Replica Set Using the `kubectl scale` Command
 
 
 ```bash
@@ -770,7 +844,7 @@ kubectl
 
 ***Transition***
 
-### Section
+### Adding Labels Using the `kubectl label` Command
 
 
 ```bash
