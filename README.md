@@ -13,7 +13,7 @@ Using the `kubectl` command imperatively to create Kubernetes manifests for decl
 - Accurate: *No typos. No formatting errors.* Works out of the box.
 - Easy: Less reliant on finding an example in the docs, then copying it.
 
-[Adrien Trouillaud](https://www.linkedin.com/in/trouillaud/) wrote an excellent Medium article, [Imperative vs. Declarative — a Kubernetes Tutorial](https://medium.com/payscale-tech/imperative-vs-declarative-a-kubernetes-tutorial-4be66c5d8914) which I discovered while researching this topic. Adrien's article, a comprehensive tutorial on how to leverage the imperative approach to creating objects in Kubernetes, clarified the topic for me. The article dates back to early 2019, so some of the syntax has changed, but the concepts in the article still ring true. I learned even more by digging into the commands and updating the syntax, where needed. I would highly recommend giving it a read.
+[Adrien Trouillaud](https://www.linkedin.com/in/trouillaud/) wrote an excellent Medium article, [Imperative vs. Declarative — a Kubernetes Tutorial](https://medium.com/payscale-tech/imperative-vs-declarative-a-kubernetes-tutorial-4be66c5d8914) which I discovered while researching this topic. Adrien's article, a comprehensive tutorial on how to leverage the imperative approach to creating objects in Kubernetes, clarified the topic for me. The article dates back to early 2019, so some of the syntax has changed, but the concepts in the article still ring true. I learned even more by digging into the commands and updating the syntax, where needed. *I would highly recommend giving it a read.*
 
 In this tutorial, we're going to get *hands-on* with using the `kubectl` command *imperatively* to create some common objects as *declarative* YAML manifests.
 
@@ -58,7 +58,9 @@ The first link, from the Kubernetes documentation, contains resources detailing 
 
 I've also provided links to two of my GitHub repositories with tutorials, one for creating a `kubeadm` cluster using Terraform and KVM ([GitHub: cka-d-cluster-builder-lab](https://github.com/southsidedean/cka-d-cluster-builder-lab)) and a second for creating a Kubernetes In Docker, or KIND, cluster ([GitHub: Deploying a Kubernetes In Docker (KIND) Cluster Using Podman on Ubuntu Linux](https://github.com/southsidedean/deploy-kind-using-podman-ubuntu)).  Either of these will work for this tutorial.
 
-When you have your cluster, test it:
+When you have your cluster, check it out. Start with the high-level cluster information.
+
+High-level information:
 ```bash
 kubectl cluster-info
 ```
@@ -73,7 +75,81 @@ CoreDNS is running at https://10.0.1.132:6443/api/v1/namespaces/kube-system/serv
 To further debug and diagnose cluster problems, use 'kubectl cluster-info dump'.
 ```
 
-***With a working cluster at our disposal, we're ready to proceed.***
+Next, take a look at your Kubernetes nodes.
+
+List of nodes, with detail:
+```bash
+kubectl get nodes -o wide
+```
+
+**Sample Output:**
+```bash
+$ kubectl get nodes -o wide
+
+NAME               STATUS   ROLES           AGE     VERSION   INTERNAL-IP   EXTERNAL-IP   OS-IMAGE             KERNEL-VERSION      CONTAINER-RUNTIME
+control-plane-01   Ready    control-plane   6d22h   v1.26.1   10.0.1.132    <none>        Ubuntu 22.04.2 LTS   5.15.0-69-generic   containerd://1.6.20
+worker-node-01     Ready    <none>          6d22h   v1.26.1   10.0.1.204    <none>        Ubuntu 22.04.2 LTS   5.15.0-69-generic   containerd://1.6.20
+```
+
+Take a look at all the objects on your cluster.
+
+List all objects, in all namespaces:
+```bash
+kubectl get all -A
+```
+
+**Sample Output:**
+```bash
+$ kubectl get all -A
+
+NAMESPACE     NAME                                           READY   STATUS    RESTARTS   AGE
+kube-system   pod/calico-kube-controllers-57b57c56f-4hvfl    1/1     Running   0          6d22h
+kube-system   pod/calico-node-s28hb                          1/1     Running   0          6d22h
+kube-system   pod/calico-node-tqb6g                          1/1     Running   0          6d22h
+kube-system   pod/coredns-787d4945fb-cg5wh                   1/1     Running   0          6d22h
+kube-system   pod/coredns-787d4945fb-xdbll                   1/1     Running   0          6d22h
+kube-system   pod/etcd-control-plane-01                      1/1     Running   0          6d22h
+kube-system   pod/kube-apiserver-control-plane-01            1/1     Running   0          6d22h
+kube-system   pod/kube-controller-manager-control-plane-01   1/1     Running   0          6d22h
+kube-system   pod/kube-proxy-blgcf                           1/1     Running   0          6d22h
+kube-system   pod/kube-proxy-t9wb4                           1/1     Running   0          6d22h
+kube-system   pod/kube-scheduler-control-plane-01            1/1     Running   0          6d22h
+
+NAMESPACE     NAME                 TYPE        CLUSTER-IP   EXTERNAL-IP   PORT(S)                  AGE
+default       service/kubernetes   ClusterIP   10.96.0.1    <none>        443/TCP                  6d22h
+kube-system   service/kube-dns     ClusterIP   10.96.0.10   <none>        53/UDP,53/TCP,9153/TCP   6d22h
+
+NAMESPACE     NAME                         DESIRED   CURRENT   READY   UP-TO-DATE   AVAILABLE   NODE SELECTOR            AGE
+kube-system   daemonset.apps/calico-node   2         2         2       2            2           kubernetes.io/os=linux   6d22h
+kube-system   daemonset.apps/kube-proxy    2         2         2       2            2           kubernetes.io/os=linux   6d22h
+
+NAMESPACE     NAME                                      READY   UP-TO-DATE   AVAILABLE   AGE
+kube-system   deployment.apps/calico-kube-controllers   1/1     1            1           6d22h
+kube-system   deployment.apps/coredns                   2/2     2            2           6d22h
+
+NAMESPACE     NAME                                                DESIRED   CURRENT   READY   AGE
+kube-system   replicaset.apps/calico-kube-controllers-57b57c56f   1         1         1       6d22h
+kube-system   replicaset.apps/coredns-787d4945fb                  2         2         2       6d22h
+```
+
+List all namespaces:
+```bash
+kubectl get ns
+```
+
+**Sample Output:**
+```bash
+$ kubectl get ns
+NAME              STATUS   AGE
+default           Active   6d22h
+kube-node-lease   Active   6d22h
+kube-public       Active   6d22h
+kube-system       Active   6d22h
+```
+
+
+
+***With a working cluster at your disposal, you're ready to proceed.***
 
 ## Exploring the `kubectl` Command
 
@@ -81,20 +157,337 @@ To further debug and diagnose cluster problems, use 'kubectl cluster-info dump'.
 
 [Kubernetes: kubectl Cheat Sheet](https://kubernetes.io/docs/reference/kubectl/cheatsheet/)
 
-The primary tool you're going to use to interact with your Kubernetes cluster, both in this tutorial and the CKA/CKAD exams, is `kubectl`.  The `kubectl` command gives us a user-friendly (or user-friendlier) method of interacting with the Kubernetes API.
+The `kubectl` command, the primary tool you're going to use to interact with your Kubernetes cluster, both in this tutorial and the **CKA/CKAD** exams, provides a user-friendly (or user-friendlier) method of interacting with the Kubernetes API. Let's take a look at the `kubectl` command.
 
+Top-level help:
 ```bash
 kubectl --help
 ```
 
+**Sample Output:**
+```bash
+$ kubectl --help
 
+kubectl controls the Kubernetes cluster manager.
+
+ Find more information at: https://kubernetes.io/docs/reference/kubectl/
+
+Basic Commands (Beginner):
+  create          Create a resource from a file or from stdin
+  expose          Take a replication controller, service, deployment or pod and expose it as a new Kubernetes service
+  run             Run a particular image on the cluster
+  set             Set specific features on objects
+
+Basic Commands (Intermediate):
+  explain         Get documentation for a resource
+  get             Display one or many resources
+  edit            Edit a resource on the server
+  delete          Delete resources by file names, stdin, resources and names, or by resources and label selector
+
+Deploy Commands:
+  rollout         Manage the rollout of a resource
+  scale           Set a new size for a deployment, replica set, or replication controller
+  autoscale       Auto-scale a deployment, replica set, stateful set, or replication controller
+
+Cluster Management Commands:
+  certificate     Modify certificate resources.
+  cluster-info    Display cluster information
+  top             Display resource (CPU/memory) usage
+  cordon          Mark node as unschedulable
+  uncordon        Mark node as schedulable
+  drain           Drain node in preparation for maintenance
+  taint           Update the taints on one or more nodes
+
+Troubleshooting and Debugging Commands:
+  describe        Show details of a specific resource or group of resources
+  logs            Print the logs for a container in a pod
+  attach          Attach to a running container
+  exec            Execute a command in a container
+  port-forward    Forward one or more local ports to a pod
+  proxy           Run a proxy to the Kubernetes API server
+  cp              Copy files and directories to and from containers
+  auth            Inspect authorization
+  debug           Create debugging sessions for troubleshooting workloads and nodes
+  events          List events
+
+Advanced Commands:
+  diff            Diff the live version against a would-be applied version
+  apply           Apply a configuration to a resource by file name or stdin
+  patch           Update fields of a resource
+  replace         Replace a resource by file name or stdin
+  wait            Experimental: Wait for a specific condition on one or many resources
+  kustomize       Build a kustomization target from a directory or URL.
+
+Settings Commands:
+  label           Update the labels on a resource
+  annotate        Update the annotations on a resource
+  completion      Output shell completion code for the specified shell (bash, zsh, fish, or powershell)
+
+Other Commands:
+  alpha           Commands for features in alpha
+  api-resources   Print the supported API resources on the server
+  api-versions    Print the supported API versions on the server, in the form of "group/version"
+  config          Modify kubeconfig files
+  plugin          Provides utilities for interacting with plugins
+  version         Print the client and server version information
+
+Usage:
+  kubectl [flags] [options]
+
+Use "kubectl <command> --help" for more information about a given command.
+Use "kubectl options" for a list of global command-line options (applies to all commands).
+```
+
+Drilling down, into the `kubectl run` command:
 ```bash
 kubectl run --help
 ```
 
+**Sample Output:**
+```bash
+$ kubectl run --help
+
+Create and run a particular image in a pod.
+
+Examples:
+  # Start a nginx pod
+  kubectl run nginx --image=nginx
+  
+  # Start a hazelcast pod and let the container expose port 5701
+  kubectl run hazelcast --image=hazelcast/hazelcast --port=5701
+  
+  # Start a hazelcast pod and set environment variables "DNS_DOMAIN=cluster" and "POD_NAMESPACE=default" in the
+container
+  kubectl run hazelcast --image=hazelcast/hazelcast --env="DNS_DOMAIN=cluster" --env="POD_NAMESPACE=default"
+  
+  # Start a hazelcast pod and set labels "app=hazelcast" and "env=prod" in the container
+  kubectl run hazelcast --image=hazelcast/hazelcast --labels="app=hazelcast,env=prod"
+  
+  # Dry run; print the corresponding API objects without creating them
+  kubectl run nginx --image=nginx --dry-run=client
+  
+  # Start a nginx pod, but overload the spec with a partial set of values parsed from JSON
+  kubectl run nginx --image=nginx --overrides='{ "apiVersion": "v1", "spec": { ... } }'
+  
+  # Start a busybox pod and keep it in the foreground, don't restart it if it exits
+  kubectl run -i -t busybox --image=busybox --restart=Never
+  
+  # Start the nginx pod using the default command, but use custom arguments (arg1 .. argN) for that command
+  kubectl run nginx --image=nginx -- <arg1> <arg2> ... <argN>
+  
+  # Start the nginx pod using a different command and custom arguments
+  kubectl run nginx --image=nginx --command -- <cmd> <arg1> ... <argN>
+
+Options:
+    --allow-missing-template-keys=true:
+	If true, ignore any errors in templates when a field or map key is missing in the template. Only applies to
+	golang and jsonpath output formats.
+
+    --annotations=[]:
+	Annotations to apply to the pod.
+
+    --attach=false:
+	If true, wait for the Pod to start running, and then attach to the Pod as if 'kubectl attach ...' were called.
+	Default false, unless '-i/--stdin' is set, in which case the default is true. With '--restart=Never' the exit
+	code of the container process is returned.
+
+    --command=false:
+	If true and extra arguments are present, use them as the 'command' field in the container, rather than the
+	'args' field which is the default.
+
+    --dry-run='none':
+	Must be "none", "server", or "client". If client strategy, only print the object that would be sent, without
+	sending it. If server strategy, submit server-side request without persisting the resource.
+
+    --env=[]:
+	Environment variables to set in the container.
+
+    --expose=false:
+	If true, create a ClusterIP service associated with the pod.  Requires `--port`.
+
+    --field-manager='kubectl-run':
+	Name of the manager used to track field ownership.
+
+    --image='':
+	The image for the container to run.
+
+    --image-pull-policy='':
+	The image pull policy for the container.  If left empty, this value will not be specified by the client and
+	defaulted by the server.
+
+    -l, --labels='':
+	Comma separated labels to apply to the pod. Will override previous values.
+
+    --leave-stdin-open=false:
+	If the pod is started in interactive mode or with stdin, leave stdin open after the first attach completes. By
+	default, stdin will be closed after the first attach completes.
+
+    -o, --output='':
+	Output format. One of: (json, yaml, name, go-template, go-template-file, template, templatefile, jsonpath,
+	jsonpath-as-json, jsonpath-file).
+
+    --override-type='merge':
+	The method used to override the generated object: json, merge, or strategic.
+
+    --overrides='':
+	An inline JSON override for the generated object. If this is non-empty, it is used to override the generated
+	object. Requires that the object supply a valid apiVersion field.
+
+    --pod-running-timeout=1m0s:
+	The length of time (like 5s, 2m, or 3h, higher than zero) to wait until at least one pod is running
+
+    --port='':
+	The port that this container exposes.
+
+    --privileged=false:
+	If true, run the container in privileged mode.
+
+    -q, --quiet=false:
+	If true, suppress prompt messages.
+
+    --restart='Always':
+	The restart policy for this Pod.  Legal values [Always, OnFailure, Never].
+
+    --rm=false:
+	If true, delete the pod after it exits.  Only valid when attaching to the container, e.g. with '--attach' or
+	with '-i/--stdin'.
+
+    --save-config=false:
+	If true, the configuration of current object will be saved in its annotation. Otherwise, the annotation will
+	be unchanged. This flag is useful when you want to perform kubectl apply on this object in the future.
+
+    --show-managed-fields=false:
+	If true, keep the managedFields when printing objects in JSON or YAML format.
+
+    -i, --stdin=false:
+	Keep stdin open on the container in the pod, even if nothing is attached.
+
+    --template='':
+	Template string or path to template file to use when -o=go-template, -o=go-template-file. The template format
+	is golang templates [http://golang.org/pkg/text/template/#pkg-overview].
+
+    -t, --tty=false:
+	Allocate a TTY for the container in the pod.
+
+Usage:
+  kubectl run NAME --image=image [--env="key=value"] [--port=port] [--dry-run=server|client] [--overrides=inline-json]
+[--command] -- [COMMAND] [args...] [options]
+
+Use "kubectl options" for a list of global command-line options (applies to all commands).
+```
+
+Listing available objects:
 ```bash
 kubectl api-resources
 ```
+
+**Sample Output:**
+```bash
+$ kubectl api-resources
+
+NAME                              SHORTNAMES   APIVERSION                             NAMESPACED   KIND
+bindings                                       v1                                     true         Binding
+componentstatuses                 cs           v1                                     false        ComponentStatus
+configmaps                        cm           v1                                     true         ConfigMap
+endpoints                         ep           v1                                     true         Endpoints
+events                            ev           v1                                     true         Event
+limitranges                       limits       v1                                     true         LimitRange
+namespaces                        ns           v1                                     false        Namespace
+nodes                             no           v1                                     false        Node
+persistentvolumeclaims            pvc          v1                                     true         PersistentVolumeClaim
+persistentvolumes                 pv           v1                                     false        PersistentVolume
+pods                              po           v1                                     true         Pod
+podtemplates                                   v1                                     true         PodTemplate
+replicationcontrollers            rc           v1                                     true         ReplicationController
+resourcequotas                    quota        v1                                     true         ResourceQuota
+secrets                                        v1                                     true         Secret
+serviceaccounts                   sa           v1                                     true         ServiceAccount
+services                          svc          v1                                     true         Service
+mutatingwebhookconfigurations                  admissionregistration.k8s.io/v1        false        MutatingWebhookConfiguration
+validatingwebhookconfigurations                admissionregistration.k8s.io/v1        false        ValidatingWebhookConfiguration
+customresourcedefinitions         crd,crds     apiextensions.k8s.io/v1                false        CustomResourceDefinition
+apiservices                                    apiregistration.k8s.io/v1              false        APIService
+controllerrevisions                            apps/v1                                true         ControllerRevision
+daemonsets                        ds           apps/v1                                true         DaemonSet
+deployments                       deploy       apps/v1                                true         Deployment
+replicasets                       rs           apps/v1                                true         ReplicaSet
+statefulsets                      sts          apps/v1                                true         StatefulSet
+tokenreviews                                   authentication.k8s.io/v1               false        TokenReview
+localsubjectaccessreviews                      authorization.k8s.io/v1                true         LocalSubjectAccessReview
+selfsubjectaccessreviews                       authorization.k8s.io/v1                false        SelfSubjectAccessReview
+selfsubjectrulesreviews                        authorization.k8s.io/v1                false        SelfSubjectRulesReview
+subjectaccessreviews                           authorization.k8s.io/v1                false        SubjectAccessReview
+horizontalpodautoscalers          hpa          autoscaling/v2                         true         HorizontalPodAutoscaler
+cronjobs                          cj           batch/v1                               true         CronJob
+jobs                                           batch/v1                               true         Job
+certificatesigningrequests        csr          certificates.k8s.io/v1                 false        CertificateSigningRequest
+leases                                         coordination.k8s.io/v1                 true         Lease
+bgpconfigurations                              crd.projectcalico.org/v1               false        BGPConfiguration
+bgppeers                                       crd.projectcalico.org/v1               false        BGPPeer
+blockaffinities                                crd.projectcalico.org/v1               false        BlockAffinity
+caliconodestatuses                             crd.projectcalico.org/v1               false        CalicoNodeStatus
+clusterinformations                            crd.projectcalico.org/v1               false        ClusterInformation
+felixconfigurations                            crd.projectcalico.org/v1               false        FelixConfiguration
+globalnetworkpolicies                          crd.projectcalico.org/v1               false        GlobalNetworkPolicy
+globalnetworksets                              crd.projectcalico.org/v1               false        GlobalNetworkSet
+hostendpoints                                  crd.projectcalico.org/v1               false        HostEndpoint
+ipamblocks                                     crd.projectcalico.org/v1               false        IPAMBlock
+ipamconfigs                                    crd.projectcalico.org/v1               false        IPAMConfig
+ipamhandles                                    crd.projectcalico.org/v1               false        IPAMHandle
+ippools                                        crd.projectcalico.org/v1               false        IPPool
+ipreservations                                 crd.projectcalico.org/v1               false        IPReservation
+kubecontrollersconfigurations                  crd.projectcalico.org/v1               false        KubeControllersConfiguration
+networkpolicies                                crd.projectcalico.org/v1               true         NetworkPolicy
+networksets                                    crd.projectcalico.org/v1               true         NetworkSet
+endpointslices                                 discovery.k8s.io/v1                    true         EndpointSlice
+events                            ev           events.k8s.io/v1                       true         Event
+flowschemas                                    flowcontrol.apiserver.k8s.io/v1beta3   false        FlowSchema
+prioritylevelconfigurations                    flowcontrol.apiserver.k8s.io/v1beta3   false        PriorityLevelConfiguration
+ingressclasses                                 networking.k8s.io/v1                   false        IngressClass
+ingresses                         ing          networking.k8s.io/v1                   true         Ingress
+networkpolicies                   netpol       networking.k8s.io/v1                   true         NetworkPolicy
+runtimeclasses                                 node.k8s.io/v1                         false        RuntimeClass
+poddisruptionbudgets              pdb          policy/v1                              true         PodDisruptionBudget
+clusterrolebindings                            rbac.authorization.k8s.io/v1           false        ClusterRoleBinding
+clusterroles                                   rbac.authorization.k8s.io/v1           false        ClusterRole
+rolebindings                                   rbac.authorization.k8s.io/v1           true         RoleBinding
+roles                                          rbac.authorization.k8s.io/v1           true         Role
+priorityclasses                   pc           scheduling.k8s.io/v1                   false        PriorityClass
+csidrivers                                     storage.k8s.io/v1                      false        CSIDriver
+csinodes                                       storage.k8s.io/v1                      false        CSINode
+csistoragecapacities                           storage.k8s.io/v1                      true         CSIStorageCapacity
+storageclasses                    sc           storage.k8s.io/v1                      false        StorageClass
+volumeattachments                              storage.k8s.io/v1                      false        VolumeAttachment
+```
+
+
+```bash
+kubectl 
+```
+
+**Sample Output:**
+```bash
+
+```
+
+```bash
+kubectl 
+```
+
+**Sample Output:**
+```bash
+
+```
+
+```bash
+kubectl 
+```
+
+**Sample Output:**
+```bash
+
+```
+
 
 
 ***Transition***
@@ -175,11 +568,65 @@ Commercial support is available at
 </html>
 ```
 
+```bash
+kubectl 
+```
+
+**Sample Output:**
+```bash
+
+```
+
+```bash
+kubectl 
+```
+
+**Sample Output:**
+```bash
+
+```
+
+```bash
+kubectl 
+```
+
+**Sample Output:**
+```bash
+
+```
+
 
 ***Transition***
 
 ### Creating Namespace Manifests Using the `kubectl create` Command
 
+
+```bash
+kubectl 
+```
+
+**Sample Output:**
+```bash
+
+```
+
+```bash
+kubectl 
+```
+
+**Sample Output:**
+```bash
+
+```
+
+```bash
+kubectl 
+```
+
+**Sample Output:**
+```bash
+
+```
 
 
 ***Transition***
@@ -187,11 +634,65 @@ Commercial support is available at
 ### Creating Pod Manifests Using the `kubectl run` Command
 
 
+```bash
+kubectl 
+```
+
+**Sample Output:**
+```bash
+
+```
+
+```bash
+kubectl 
+```
+
+**Sample Output:**
+```bash
+
+```
+
+```bash
+kubectl 
+```
+
+**Sample Output:**
+```bash
+
+```
+
 
 ***Transition***
 
 ### Creating Deployment Manifests Using the `kubectl create` Command
 
+
+```bash
+kubectl 
+```
+
+**Sample Output:**
+```bash
+
+```
+
+```bash
+kubectl 
+```
+
+**Sample Output:**
+```bash
+
+```
+
+```bash
+kubectl 
+```
+
+**Sample Output:**
+```bash
+
+```
 
 
 ***Transition***
@@ -199,41 +700,230 @@ Commercial support is available at
 ### Creating Service Manifests Using the `kubectl create` Command
 
 
+```bash
+kubectl 
+```
 
-***Transition***
+**Sample Output:**
+```bash
 
-### Section
+```
 
+```bash
+kubectl 
+```
 
+**Sample Output:**
+```bash
 
-***Transition***
+```
 
-### Section
+```bash
+kubectl 
+```
 
+**Sample Output:**
+```bash
 
-
-***Transition***
-
-### Section
-
-
-
-***Transition***
-
-### Section
-
-
-
-***Transition***
-
-### Section
-
+```
 
 
 ***Transition***
 
 ### Section
 
+
+```bash
+kubectl 
+```
+
+**Sample Output:**
+```bash
+
+```
+
+```bash
+kubectl 
+```
+
+**Sample Output:**
+```bash
+
+```
+
+```bash
+kubectl 
+```
+
+**Sample Output:**
+```bash
+
+```
+
+
+***Transition***
+
+### Section
+
+
+```bash
+kubectl 
+```
+
+**Sample Output:**
+```bash
+
+```
+
+```bash
+kubectl 
+```
+
+**Sample Output:**
+```bash
+
+```
+
+```bash
+kubectl 
+```
+
+**Sample Output:**
+```bash
+
+```
+
+
+***Transition***
+
+### Section
+
+
+```bash
+kubectl 
+```
+
+**Sample Output:**
+```bash
+
+```
+
+```bash
+kubectl 
+```
+
+**Sample Output:**
+```bash
+
+```
+
+```bash
+kubectl 
+```
+
+**Sample Output:**
+```bash
+
+```
+
+
+***Transition***
+
+### Section
+
+
+```bash
+kubectl 
+```
+
+**Sample Output:**
+```bash
+
+```
+
+```bash
+kubectl 
+```
+
+**Sample Output:**
+```bash
+
+```
+
+```bash
+kubectl 
+```
+
+**Sample Output:**
+```bash
+
+```
+
+
+***Transition***
+
+### Section
+
+
+```bash
+kubectl 
+```
+
+**Sample Output:**
+```bash
+
+```
+
+```bash
+kubectl 
+```
+
+**Sample Output:**
+```bash
+
+```
+
+```bash
+kubectl 
+```
+
+**Sample Output:**
+```bash
+
+```
+
+
+***Transition***
+
+### Section
+
+
+```bash
+kubectl 
+```
+
+**Sample Output:**
+```bash
+
+```
+
+```bash
+kubectl 
+```
+
+**Sample Output:**
+```bash
+
+```
+
+```bash
+kubectl 
+```
+
+**Sample Output:**
+```bash
+
+```
 
 
 ***Transition***
