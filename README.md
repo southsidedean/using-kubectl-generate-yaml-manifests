@@ -147,8 +147,6 @@ kube-public       Active   6d22h
 kube-system       Active   6d22h
 ```
 
-
-
 ***With a working cluster at your disposal, you're ready to proceed.***
 
 ## Exploring the `kubectl` Command
@@ -157,7 +155,7 @@ kube-system       Active   6d22h
 
 [Kubernetes: kubectl Cheat Sheet](https://kubernetes.io/docs/reference/kubectl/cheatsheet/)
 
-The `kubectl` command, the primary tool you're going to use to interact with your Kubernetes cluster, both in this tutorial and the **CKA/CKAD** exams, provides a user-friendly (or user-friendlier) method of interacting with the Kubernetes API. Let's take a look at the `kubectl` command.
+The `kubectl` command, the primary tool you're going to use to interact with your Kubernetes cluster, both in this tutorial and the **CKA/CKAD** exams, provides a user-friendly, *or user-friendlier*, method of interacting with the Kubernetes API. Let's take a look at the `kubectl` command.
 
 Top-level help:
 ```bash
@@ -237,6 +235,8 @@ Usage:
 Use "kubectl <command> --help" for more information about a given command.
 Use "kubectl options" for a list of global command-line options (applies to all commands).
 ```
+
+This provides you with a great high-level view of all the commands available in `kubectl`. You can dig down further by adding the command.
 
 Drilling down, into the `kubectl run` command:
 ```bash
@@ -376,7 +376,13 @@ Usage:
 Use "kubectl options" for a list of global command-line options (applies to all commands).
 ```
 
-Listing available objects:
+This view gives you a high-level explanation of the command, usage examples and the syntax and switches for the command.
+
+Go ahead, play around, get familiar with the help functionality in the `kubectl` command. It's the fastest documentation for `kubectl`, both when taking the exams and for day-to-day use.
+
+Kubernetes API resources, another part of the `kubectl` command to understand, can be viewed using the `kubectl api-resources` command.
+
+Listing available API resources:
 ```bash
 kubectl api-resources
 ```
@@ -461,6 +467,7 @@ volumeattachments                              storage.k8s.io/v1                
 ```
 
 
+
 ```bash
 kubectl 
 ```
@@ -498,7 +505,7 @@ kubectl
 
 Say you've been presented with the following request:
 
-"Create a *single* pod, named `nginx-pod`, using the image `nginx:latest`, in the `imperative` namespace, with port 80 exposed."
+***"Create a *single* pod, named `nginx-pod`, using the image `nginx:latest`, in the `imperative` namespace, with port 80 exposed."***
 
 Create the `nginx-pod` imperatively:
 ```bash
