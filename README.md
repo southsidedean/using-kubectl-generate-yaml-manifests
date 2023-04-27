@@ -1,17 +1,23 @@
 # Using `kubectl` to Generate YAML Manifests
-**Tom Dean - 4/26/2023**
+**Tom Dean - 4/27/2023**
 
 ## Introduction
 
-I'm preparing to take the #CKAD and #CKA exams, and one area I need to build my #k8s muscles is using the `kubectl` command imperatively to create #Kubernetes manifests for #declarative deployment.
+I'm currently studying to take the **CKAD** and **CKA** exams, and there remain a few key areas where I need to build my Kubernetes muscles. Coming from a Linux background (of many years), the cluster building and troubleshooting doesn't faze me. Creating declarative manifests, well, that's a different story.
 
-On the CKAD and CKA exams, every second counts, and this skill facilitates the rapid and consistent generation of #YAML manifests that can quickly be edited and deployed to Kubernetes.
+Using the `kubectl` command imperatively to create Kubernetes manifests for declarative deployment, an important skill for both exams, lands at the top of that list. On the **CKAD** and **CKA** exams, *every second counts*, and this skill facilitates the *rapid and consistent generation* of **YAML** manifests that can *quickly* be edited and deployed to Kubernetes.
 
-Adrien Trouillaud's excellent Medium article, [Imperative vs. Declarative — a Kubernetes Tutorial](https://medium.com/payscale-tech/imperative-vs-declarative-a-kubernetes-tutorial-4be66c5d8914) while researching this topic. Adrien's article is a comprehensive tutorial on how to leverage the #imperative approach to creating objects in Kubernetes.
+**What makes this skill so important?**
 
-In this tutorial, we're going to examine how we can use the `kubectl` command *imperatively* to create some common objects as *declarative* YAML manifests.
+- Fast: *Seconds count.* Let `kubectl` do the work.
+- Accurate: *No typos. No formatting errors.* Works out of the box.
+- Easy: Less reliant on finding an example in the docs, then copying it.
 
-***Transition***
+[Adrien Trouillaud](https://www.linkedin.com/in/trouillaud/) wrote an excellent Medium article, [Imperative vs. Declarative — a Kubernetes Tutorial](https://medium.com/payscale-tech/imperative-vs-declarative-a-kubernetes-tutorial-4be66c5d8914) which I discovered while researching this topic. Adrien's article, a comprehensive tutorial on how to leverage the imperative approach to creating objects in Kubernetes, clarified the topic for me. The article dates back to early 2019, so some of the syntax has changed, but the concepts in the article still ring true. I learned even more by digging into the commands and updating the syntax, where needed. I would highly recommend giving it a read.
+
+In this tutorial, we're going to get *hands-on* with using the `kubectl` command *imperatively* to create some common objects as *declarative* YAML manifests.
+
+***Let's dig in!***
 
 ## References
 
@@ -44,13 +50,13 @@ In this tutorial, we're going to examine how we can use the `kubectl` command *i
 
 [GitHub: Deploying a Kubernetes In Docker (KIND) Cluster Using Podman on Ubuntu Linux](https://github.com/southsidedean/deploy-kind-using-podman-ubuntu)
 
-*The examples in this guide come from an Ubuntu Linux 22.04 operating system environment with a Kubernetes 1.26.1 cluster configured with `kubeadm`.*
+*The examples in this guide come from an Ubuntu Linux 22.04 operating system environment with a two-node Kubernetes 1.26.1 cluster configured with `kubeadm`, using the [`cka-d-cluster-builder-lab`](https://github.com/southsidedean/cka-d-cluster-builder-lab) automation.*
 
-You're going to need a Kubernetes environment to perform the steps in this tutorial.  If you have access to one already, you can use it.  If not, you'll need to create one.  I'v provided some resources in the links in this section.
+You're going to need a Kubernetes environment to perform the steps in this tutorial.  If you have access to one already, you can use it.  If not, you'll need to create one.  I've provided some resources in the links in this section.
 
 The first link, from the Kubernetes documentation, contains resources detailing several options for cluster installation.
 
-I've also provided links to two of my GitHub repositories with tutorials, one for creating a `kubeadm` cluster and a second for creating a Kubernetes In Docker, or KIND, cluster.  Either of these will also work for this tutorial.
+I've also provided links to two of my GitHub repositories with tutorials, one for creating a `kubeadm` cluster using Terraform and KVM ([GitHub: cka-d-cluster-builder-lab](https://github.com/southsidedean/cka-d-cluster-builder-lab)) and a second for creating a Kubernetes In Docker, or KIND, cluster ([GitHub: Deploying a Kubernetes In Docker (KIND) Cluster Using Podman on Ubuntu Linux](https://github.com/southsidedean/deploy-kind-using-podman-ubuntu)).  Either of these will work for this tutorial.
 
 When you have your cluster, test it:
 ```bash
@@ -168,6 +174,12 @@ Commercial support is available at
 </body>
 </html>
 ```
+
+
+***Transition***
+
+### Creating Namespace Manifests Using the `kubectl create` Command
+
 
 
 ***Transition***
