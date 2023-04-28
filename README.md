@@ -43,12 +43,6 @@ In this tutorial, you're not only going to learn about the `kubectl` command, yo
 
 [Kubernetes: Deployments](https://kubernetes.io/docs/concepts/workloads/controllers/deployment/)
 
-[]()
-
-[]()
-
-[]()
-
 ## Prerequisites
 
 [Kubernetes: Install Tools](https://kubernetes.io/docs/tasks/tools/)
@@ -2770,6 +2764,12 @@ Use the following practice exercises to test the skills you learned in this tuto
 
 
 [Exercise 5: Solution](solutions/solution-exercise-5.md)
+
+### Exercise 6
+
+
+
+[Exercise 6: Solution](solutions/solution-exercise-6.md)
 
 ***Transition***
 
