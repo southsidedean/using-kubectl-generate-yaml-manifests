@@ -1,5 +1,5 @@
 # Using `kubectl` to Generate YAML Manifests
-**Tom Dean - 4/27/2023**
+**Tom Dean - 4/28/2023**
 
 ## Introduction
 
@@ -600,7 +600,7 @@ Quite often, you just want to create a *straightforward* Kubernetes object, like
 
 Say you've been presented with the following request:
 
-***"Create a *single* pod, named `nginx-pod`, using the image `nginx:latest`, in the `imperative` namespace, with`port 80` exposed."***
+***"Create a *single* pod, named `nginx-pod`, using the image `nginx:latest`, in the `imperative` namespace, with `port 80` exposed."***
 
 Create the `nginx-pod` imperatively:
 ```bash
@@ -677,10 +677,10 @@ Containers:
       /var/run/secrets/kubernetes.io/serviceaccount from kube-api-access-vbfgp (ro)
 Conditions:
   Type              Status
-  Initialized       True 
-  Ready             True 
-  ContainersReady   True 
-  PodScheduled      True 
+  Initialized       True
+  Ready             True
+  ContainersReady   True
+  PodScheduled      True
 Volumes:
   kube-api-access-vbfgp:
     Type:                    Projected (a volume that contains injected data from multiple sources)
@@ -1435,6 +1435,41 @@ kubectl
 ***Transition***
 
 ## Practice Exercises
+
+
+
+### Exercise 1
+
+***Create a *single* pod, imperatively, named ``, using the image ``, in the `` namespace, with `port ` exposed.***
+
+[Exercise 1: Solution](solutions/solution-exercise-1.md)
+
+### Exercise 2
+
+
+
+[Exercise 2: Solution](solutions/solution-exercise-2.md)
+
+
+### Exercise 3
+
+
+
+[Exercise 3: Solution](solutions/solution-exercise-3.md)
+
+
+### Exercise 4
+
+
+
+[Exercise 4: Solution](solutions/solution-exercise-4.md)
+
+
+### Exercise 5
+
+
+
+[Exercise 5: Solution](solutions/solution-exercise-5.md)
 
 
 
