@@ -1008,6 +1008,7 @@ Use "kubectl options" for a list of global command-line options (applies to all
 commands).
 ```
 
+***Create a YAML manifest for a Namespace, named `my-nginx-namespace` in a file named `my-nginx-namespace.yaml`.***
 
 Create the `my-nginx-deployment` namespace:
 ```bash
@@ -1031,6 +1032,8 @@ metadata:
 spec: {}
 status: {}
 ```
+
+***Create a YAML manifest for a Deployment, named `my-nginx-deployment`, using the `nginx-latest` container image, in the `my-nginx-namespace` namespace, with 3 replicas, exposing port 80, in a file named `my-nginx-deployment.yaml`.***
 
 ```bash
 kubectl create deployment my-nginx-deployment --image=nginx:latest --namespace my-nginx-namespace --replicas=3 --port=80 --dry-run=client --output=yaml > my-nginx-deployment.yaml
@@ -2554,7 +2557,7 @@ kubectl
 
 ***Transition***
 
-## Deleting Kubernetes Objects Using `kubectl`
+## Deleting Kubernetes Objects Using `kubectl delete`
 
 
 
@@ -2564,7 +2567,50 @@ kubectl get all -A
 
 **Sample Output:**
 ```bash
+$ kubectl get all -A
+NAMESPACE            NAME                                           READY   STATUS    RESTARTS   AGE
+declarative          pod/nginx-pod                                  1/1     Running   0          26h
+imperative           pod/nginx-pod                                  1/1     Running   0          35s
+kube-system          pod/calico-kube-controllers-57b57c56f-4hvfl    1/1     Running   0          8d
+kube-system          pod/calico-node-s28hb                          1/1     Running   0          8d
+kube-system          pod/calico-node-tqb6g                          1/1     Running   0          8d
+kube-system          pod/coredns-787d4945fb-cg5wh                   1/1     Running   0          8d
+kube-system          pod/coredns-787d4945fb-xdbll                   1/1     Running   0          8d
+kube-system          pod/etcd-control-plane-01                      1/1     Running   0          8d
+kube-system          pod/kube-apiserver-control-plane-01            1/1     Running   0          8d
+kube-system          pod/kube-controller-manager-control-plane-01   1/1     Running   0          8d
+kube-system          pod/kube-proxy-blgcf                           1/1     Running   0          8d
+kube-system          pod/kube-proxy-t9wb4                           1/1     Running   0          8d
+kube-system          pod/kube-scheduler-control-plane-01            1/1     Running   0          8d
+my-nginx-namespace   pod/my-nginx-deployment-9cbcd46b4-42n2q        1/1     Running   0          26h
+my-nginx-namespace   pod/my-nginx-deployment-9cbcd46b4-6hlwl        1/1     Running   0          4h50m
+my-nginx-namespace   pod/my-nginx-deployment-9cbcd46b4-7t2fr        1/1     Running   0          4h50m
+my-nginx-namespace   pod/my-nginx-deployment-9cbcd46b4-bls2n        1/1     Running   0          4h50m
+my-nginx-namespace   pod/my-nginx-deployment-9cbcd46b4-f4lkn        1/1     Running   0          4h50m
+my-nginx-namespace   pod/my-nginx-deployment-9cbcd46b4-mxxbl        1/1     Running   0          4h50m
+my-nginx-namespace   pod/my-nginx-deployment-9cbcd46b4-nq7xw        1/1     Running   0          4h58m
+my-nginx-namespace   pod/my-nginx-deployment-9cbcd46b4-smcv6        1/1     Running   0          4h58m
+my-nginx-namespace   pod/my-nginx-deployment-9cbcd46b4-sz27h        1/1     Running   0          4h50m
+my-nginx-namespace   pod/my-nginx-deployment-9cbcd46b4-v8bp5        1/1     Running   0          4h50m
 
+NAMESPACE            NAME                       TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)                  AGE
+default              service/kubernetes         ClusterIP   10.96.0.1        <none>        443/TCP                  8d
+kube-system          service/kube-dns           ClusterIP   10.96.0.10       <none>        53/UDP,53/TCP,9153/TCP   8d
+my-nginx-namespace   service/my-nginx-service   ClusterIP   10.111.212.138   <none>        8888/TCP                 5h34m
+
+NAMESPACE     NAME                         DESIRED   CURRENT   READY   UP-TO-DATE   AVAILABLE   NODE SELECTOR            AGE
+kube-system   daemonset.apps/calico-node   2         2         2       2            2           kubernetes.io/os=linux   8d
+kube-system   daemonset.apps/kube-proxy    2         2         2       2            2           kubernetes.io/os=linux   8d
+
+NAMESPACE            NAME                                      READY   UP-TO-DATE   AVAILABLE   AGE
+kube-system          deployment.apps/calico-kube-controllers   1/1     1            1           8d
+kube-system          deployment.apps/coredns                   2/2     2            2           8d
+my-nginx-namespace   deployment.apps/my-nginx-deployment       10/10   10           10          26h
+
+NAMESPACE            NAME                                                DESIRED   CURRENT   READY   AGE
+kube-system          replicaset.apps/calico-kube-controllers-57b57c56f   1         1         1       8d
+kube-system          replicaset.apps/coredns-787d4945fb                  2         2         2       8d
+my-nginx-namespace   replicaset.apps/my-nginx-deployment-9cbcd46b4       10        10        10      26h
 ```
 
 ```bash
@@ -2589,50 +2635,141 @@ $ kubectl delete ns/imperative
 namespace "imperative" deleted
 ```
 
+```bash
+kubectl get all -n imperative
+```
+
+**Sample Output:**
+```bash
+$ kubectl get all -n imperative
+
+No resources found in imperative namespace.
+```
 
 
-***Transition***
+```bash
+kubectl delete pod/nginx-pod -n declarative ; kubectl delete ns/declarative
+```
+
+**Sample Output:**
+```bash
+$ kubectl delete pod/nginx-pod -n declarative ; kubectl delete ns/declarative
+
+pod "nginx-pod" deleted
+namespace "declarative" deleted
+```
+
+
+
+```bash
+kubectl delete -f my-nginx-service.yaml
+```
+
+```bash
+kubectl delete -f my-nginx-deployment.yaml
+```
+
+```bash
+kubectl delete -f my-nginx-namespace.yaml
+```
+
+```bash
+kubectl get all -n my-nginx-namespace
+```
+
+**Sample Output:**
+```bash
+$ kubectl delete -f my-nginx-service.yaml
+
+service "my-nginx-service" deleted
+
+$ kubectl delete -f my-nginx-deployment.yaml
+
+deployment.apps "my-nginx-deployment" deleted
+
+$ kubectl delete -f my-nginx-namespace.yaml
+
+namespace "my-nginx-namespace" deleted
+
+$ kubectl get all -n my-nginx-namespace
+
+No resources found in my-nginx-namespace namespace.
+```
+
+
+```bash
+kubectl get all -A
+```
+
+**Sample Output:**
+```bash
+$ kubectl get all -A
+
+NAMESPACE     NAME                                           READY   STATUS    RESTARTS   AGE
+kube-system   pod/calico-kube-controllers-57b57c56f-4hvfl    1/1     Running   0          8d
+kube-system   pod/calico-node-s28hb                          1/1     Running   0          8d
+kube-system   pod/calico-node-tqb6g                          1/1     Running   0          8d
+kube-system   pod/coredns-787d4945fb-cg5wh                   1/1     Running   0          8d
+kube-system   pod/coredns-787d4945fb-xdbll                   1/1     Running   0          8d
+kube-system   pod/etcd-control-plane-01                      1/1     Running   0          8d
+kube-system   pod/kube-apiserver-control-plane-01            1/1     Running   0          8d
+kube-system   pod/kube-controller-manager-control-plane-01   1/1     Running   0          8d
+kube-system   pod/kube-proxy-blgcf                           1/1     Running   0          8d
+kube-system   pod/kube-proxy-t9wb4                           1/1     Running   0          8d
+kube-system   pod/kube-scheduler-control-plane-01            1/1     Running   0          8d
+
+NAMESPACE     NAME                 TYPE        CLUSTER-IP   EXTERNAL-IP   PORT(S)                  AGE
+default       service/kubernetes   ClusterIP   10.96.0.1    <none>        443/TCP                  8d
+kube-system   service/kube-dns     ClusterIP   10.96.0.10   <none>        53/UDP,53/TCP,9153/TCP   8d
+
+NAMESPACE     NAME                         DESIRED   CURRENT   READY   UP-TO-DATE   AVAILABLE   NODE SELECTOR            AGE
+kube-system   daemonset.apps/calico-node   2         2         2       2            2           kubernetes.io/os=linux   8d
+kube-system   daemonset.apps/kube-proxy    2         2         2       2            2           kubernetes.io/os=linux   8d
+
+NAMESPACE     NAME                                      READY   UP-TO-DATE   AVAILABLE   AGE
+kube-system   deployment.apps/calico-kube-controllers   1/1     1            1           8d
+kube-system   deployment.apps/coredns                   2/2     2            2           8d
+
+NAMESPACE     NAME                                                DESIRED   CURRENT   READY   AGE
+kube-system   replicaset.apps/calico-kube-controllers-57b57c56f   1         1         1       8d
+kube-system   replicaset.apps/coredns-787d4945fb                  2         2         2       8d
+```
+
+***Everything you created has been cleaned up. Good job!***
 
 ## Practice Exercises
 
-
+Use the following practice exercises to test the skills you learned in this tutorial. Try and solve the exercises on your own before checking the solutions.
 
 ### Exercise 1
 
-
-
-***Create a *single* pod, imperatively, named `X`, using the image `X`, in the `X` namespace, with `port X` exposed.***
+***Create a single Pod, imperatively, named `apache-pod`, using the image `httpd:latest`, in the `apache-imperative` namespace, with `port 80` exposed. Confirm that your Pod is in the `Running` state. Confirm you can reach the Apache web server using `curl`.***
 
 [Exercise 1: Solution](solutions/solution-exercise-1.md)
 
 ### Exercise 2
 
-
+***Create a YAML manifest for a single Pod, imperatively, named `apache-pod`, using the image `httpd:latest`, in the `apache-declarative` namespace, with `port 80` exposed. Review this manifest, deploy it, and confirm all the objects have been created. Confirm that your Pod is in the `Running` state. Confirm you can reach the Apache web server using `curl`.***
 
 [Exercise 2: Solution](solutions/solution-exercise-2.md)
 
-
 ### Exercise 3
 
-
+***Create a YAML manifest for a Namespace, named `my-nginx-namespace` in a file named `my-nginx-namespace.yaml`. Review this manifest, deploy it, and confirm all the objects have been created.***
 
 [Exercise 3: Solution](solutions/solution-exercise-3.md)
 
-
 ### Exercise 4
 
-
+***Create a YAML manifest for a Deployment, named `my-nginx-deployment`, using the `nginx-latest` container image, in the `my-nginx-namespace` namespace, with 3 replicas, exposing port 80, in a file named `my-nginx-deployment.yaml`. Review this manifest, deploy it, and confirm all the objects have been created.***
 
 [Exercise 4: Solution](solutions/solution-exercise-4.md)
-
 
 ### Exercise 5
 
 
 
 [Exercise 5: Solution](solutions/solution-exercise-5.md)
-
-
 
 ***Transition***
 
