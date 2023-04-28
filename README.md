@@ -587,11 +587,12 @@ The previous example shows how you can neatly check on multiple API resource typ
 Take some time, explore the `kubectl` command, the built-in help documentation, API resources and how to use the `kubectl explain` command as a resource.
 
 **AGAIN:**
+
 [Adrien Trouillaud](https://www.linkedin.com/in/trouillaud/) wrote an excellent Medium article, [Imperative vs. Declarative — a Kubernetes Tutorial](https://medium.com/payscale-tech/imperative-vs-declarative-a-kubernetes-tutorial-4be66c5d8914) which I discovered while researching this topic. Adrien's article, a comprehensive tutorial on how to leverage the imperative approach to creating objects in Kubernetes, clarified the topic for me. The article dates back to early 2019, so some of the syntax has changed, but the concepts in the article still ring true. I learned even more by digging into the commands and updating the syntax, where needed. ***I would highly recommend giving it a read.***
 
 ***Now that you've warmed up with some `kubectl` exercises, it's time to put `kubectl` to use.***
 
-### Creating a Pod Imperatively Using the `kubectl run` Command
+## Creating a Pod Imperatively Using the `kubectl run` Command
 
 [Kubernetes: Managing Kubernetes Objects Using Imperative Commands](https://kubernetes.io/docs/tasks/manage-kubernetes-objects/imperative-command/)
 
@@ -745,7 +746,7 @@ What if you want to use `kubectl` imperatively, but want to generate a declarati
 
 ***Let's take a look at how you can use the `kubectl` command imperatively to create manifests!***
 
-### Generating a Namespace Manifest Using the `kubectl create` Command
+## Generating a Namespace Manifest Using the `kubectl create` Command
 
 You created your `imperative` namespace to hold the objects you want to create *imperatively*, using `kubectl`. Now, you're going to start creating objects *declarively*, so you're going to put those into the `declarative` namespace.
 
@@ -808,7 +809,7 @@ kube-system       Active   7d3h
 
 ***Transition***
 
-### Generating a Pod Manifest Using the `kubectl run` Command
+## Generating a Pod Manifest Using the `kubectl run` Command
 
 
 
@@ -906,7 +907,7 @@ The NGINX web server in our `nginx-pod` Pod responds with the default web page. 
 
 ***Transition***
 
-### Creating Deployment Manifests Using the `kubectl create` Command
+## Creating Deployment Manifests Using the `kubectl create` Command
 
 
 
@@ -1152,7 +1153,7 @@ The NGINX web server in our `nginx-pod` Pods respond with the default web page. 
 
 ***Transition***
 
-### Creating a Service Manifest Using the `kubectl create` Command
+## Creating a Service Manifest Using the `kubectl create` Command
 
 
 
@@ -1222,52 +1223,12 @@ kubectl
 ```
 
 
-***Transition***
-
-### Scaling a Replica Set Using the `kubectl scale` Command
-
-
-```bash
-kubectl 
-```
-
-**Sample Output:**
-```bash
-
-```
-
-```bash
-kubectl 
-```
-
-**Sample Output:**
-```bash
-
-```
-
-```bash
-kubectl 
-```
-
-**Sample Output:**
-```bash
-
-```
-
 
 ***Transition***
 
-### Adding Labels Using the `kubectl label` Command
+## Scaling a Replica Set Using the `kubectl scale` Command
 
 
-```bash
-kubectl 
-```
-
-**Sample Output:**
-```bash
-
-```
 
 ```bash
 kubectl 
@@ -1286,11 +1247,21 @@ kubectl
 ```bash
 
 ```
+
+```bash
+kubectl 
+```
+
+**Sample Output:**
+```bash
+
+```
+
 
 
 ***Transition***
 
-### Checking Logs Using `kubectl`
+## Adding Labels Using the `kubectl label` Command
 
 
 
@@ -1320,11 +1291,12 @@ kubectl
 ```bash
 
 ```
+
 
 
 ***Transition***
 
-### Exporting Running Kubernetes Objects to a Manifest Using `kubectl`
+## Checking Logs Using `kubectl`
 
 
 
@@ -1358,7 +1330,7 @@ kubectl
 
 ***Transition***
 
-### Deleting Kubernetes Objects Using `kubectl`
+## Exporting Running Kubernetes Objects to a Manifest Using `kubectl`
 
 
 
@@ -1392,17 +1364,9 @@ kubectl
 
 ***Transition***
 
-### Section
+## Deleting Kubernetes Objects Using `kubectl`
 
 
-```bash
-kubectl 
-```
-
-**Sample Output:**
-```bash
-
-```
 
 ```bash
 kubectl 
@@ -1421,11 +1385,56 @@ kubectl
 ```bash
 
 ```
+
+```bash
+kubectl 
+```
+
+**Sample Output:**
+```bash
+
+```
+
 
 
 ***Transition***
 
-### Practice Exercises
+## Section
+
+
+
+```bash
+kubectl 
+```
+
+**Sample Output:**
+```bash
+
+```
+
+```bash
+kubectl 
+```
+
+**Sample Output:**
+```bash
+
+```
+
+```bash
+kubectl 
+```
+
+**Sample Output:**
+```bash
+
+```
+
+
+
+***Transition***
+
+## Practice Exercises
 
 
 
