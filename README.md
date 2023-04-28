@@ -13,7 +13,7 @@ Using the `kubectl` command imperatively to create Kubernetes manifests for decl
 - Accurate: *No typos. No formatting errors.* Manifest works the first time.
 - Easy: Let `kubectl` do the heavy lifting.
 
-[Adrien Trouillaud](https://www.linkedin.com/in/trouillaud/) wrote an excellent Medium article, [Imperative vs. Declarative — a Kubernetes Tutorial](https://medium.com/payscale-tech/imperative-vs-declarative-a-kubernetes-tutorial-4be66c5d8914) which I discovered while researching this topic. Adrien's article, a comprehensive tutorial on how to leverage the imperative approach to creating objects in Kubernetes, clarified the topic for me. The article dates back to early 2019, so some of the syntax has changed, but the concepts in the article still ring true. I learned even more by digging into the commands and updating the syntax, where needed. *I would highly recommend giving it a read.*
+[Adrien Trouillaud](https://www.linkedin.com/in/trouillaud/) wrote an excellent Medium article, [Imperative vs. Declarative — a Kubernetes Tutorial](https://medium.com/payscale-tech/imperative-vs-declarative-a-kubernetes-tutorial-4be66c5d8914), which I discovered while researching this topic. Adrien's article, a comprehensive tutorial on how to leverage the imperative approach to creating objects in Kubernetes, clarified the topic for me. The article dates back to early 2019, so some of the syntax has changed, but the concepts in the article still ring true. I learned even more by digging into the commands and updating the syntax, where needed. *I would highly recommend giving it a read.*
 
 In this tutorial, we're going to get *hands-on* with using the `kubectl` command *imperatively* to create some common objects as *declarative* YAML manifests.
 
@@ -751,7 +751,7 @@ What if you want to use `kubectl` imperatively, but want to generate a declarati
 
 ***Let's take a look at how you can use the `kubectl` command imperatively to create manifests!***
 
-## Generating a Namespace Manifest Using the `kubectl create` Command
+## Generating a Namespace Manifest Using the `kubectl create namespace` Command
 
 You created your `imperative` namespace to hold the objects you want to create *imperatively*, using `kubectl`. Now, you're going to start creating objects *declarively*, so you're going to put those into the `declarative` namespace.
 
@@ -912,8 +912,11 @@ The NGINX web server in our `nginx-pod` Pod responds with the default web page. 
 
 ***Transition***
 
-## Creating Deployment Manifests Using the `kubectl create` Command
+## Creating Deployment Manifests Using the `kubectl create deploy` Command
 
+[Kubernetes: Deployments](https://kubernetes.io/docs/concepts/workloads/controllers/deployment/)
+
+[Kubernetes: ReplicaSet](https://kubernetes.io/docs/concepts/workloads/controllers/replicaset/)
 
 
 
@@ -1707,7 +1710,6 @@ $ kubectl get all -n my-nginx-namespace
 
 NAME                                      READY   STATUS        RESTARTS   AGE
 pod/my-nginx-deployment-9cbcd46b4-42n2q   1/1     Running       0          21h
-pod/my-nginx-deployment-9cbcd46b4-dv572   0/1     Terminating   0          117s
 pod/my-nginx-deployment-9cbcd46b4-nq7xw   1/1     Running       0          117s
 pod/my-nginx-deployment-9cbcd46b4-smcv6   1/1     Running       0          117s
 
@@ -1828,38 +1830,412 @@ Commercial support is available at
 
 ***Transition***
 
-## Adding Labels Using the `kubectl label` Command
+## Adding Labels to Kubernetes Objects Using the `kubectl label` Command
+
+[Kubernetes: Labels and Selectors](https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/)
 
 
 
+Labels and Selectors play an important role in Kubernetes, so be sure to read the [Labels and Selectors](https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/) documentation and know the things of value contained within.
+
+
+
+Show labels on pods in the `my-nginx-namespace` namespace:
 ```bash
-kubectl 
+kubectl get pods -n my-nginx-namespace --show-labels
 ```
 
 **Sample Output:**
 ```bash
-
+$ kubectl get pods -n my-nginx-namespace --show-labels
+NAME                                  READY   STATUS    RESTARTS   AGE   LABELS
+my-nginx-deployment-9cbcd46b4-42n2q   1/1     Running   0          22h   app=my-nginx-deployment,pod-template-hash=9cbcd46b4
+my-nginx-deployment-9cbcd46b4-6hlwl   1/1     Running   0          81m   app=my-nginx-deployment,pod-template-hash=9cbcd46b4
+my-nginx-deployment-9cbcd46b4-7t2fr   1/1     Running   0          81m   app=my-nginx-deployment,pod-template-hash=9cbcd46b4
+my-nginx-deployment-9cbcd46b4-bls2n   1/1     Running   0          81m   app=my-nginx-deployment,pod-template-hash=9cbcd46b4
+my-nginx-deployment-9cbcd46b4-f4lkn   1/1     Running   0          81m   app=my-nginx-deployment,pod-template-hash=9cbcd46b4
+my-nginx-deployment-9cbcd46b4-mxxbl   1/1     Running   0          81m   app=my-nginx-deployment,pod-template-hash=9cbcd46b4
+my-nginx-deployment-9cbcd46b4-nq7xw   1/1     Running   0          89m   app=my-nginx-deployment,pod-template-hash=9cbcd46b4
+my-nginx-deployment-9cbcd46b4-smcv6   1/1     Running   0          89m   app=my-nginx-deployment,pod-template-hash=9cbcd46b4
+my-nginx-deployment-9cbcd46b4-sz27h   1/1     Running   0          81m   app=my-nginx-deployment,pod-template-hash=9cbcd46b4
+my-nginx-deployment-9cbcd46b4-v8bp5   1/1     Running   0          81m   app=my-nginx-deployment,pod-template-hash=9cbcd46b4
 ```
 
-```bash
-kubectl 
+kubectl label --help
 ```
 
 **Sample Output:**
 ```bash
+$ kubectl label --help
 
+Update the labels on a resource.
+
+  *  A label key and value must begin with a letter or number, and may contain letters, numbers, hyphens, dots, and
+underscores, up to 63 characters each.
+  *  Optionally, the key can begin with a DNS subdomain prefix and a single '/', like example.com/my-app.
+  *  If --overwrite is true, then existing labels can be overwritten, otherwise attempting to overwrite a label will
+result in an error.
+  *  If --resource-version is specified, then updates will use this resource version, otherwise the existing
+resource-version will be used.
+
+Examples:
+  # Update pod 'foo' with the label 'unhealthy' and the value 'true'
+  kubectl label pods foo unhealthy=true
+
+  # Update pod 'foo' with the label 'status' and the value 'unhealthy', overwriting any existing value
+  kubectl label --overwrite pods foo status=unhealthy
+
+  # Update all pods in the namespace
+  kubectl label pods --all status=unhealthy
+
+  # Update a pod identified by the type and name in "pod.json"
+  kubectl label -f pod.json status=unhealthy
+
+  # Update pod 'foo' only if the resource is unchanged from version 1
+  kubectl label pods foo status=unhealthy --resource-version=1
+
+  # Update pod 'foo' by removing a label named 'bar' if it exists
+  # Does not require the --overwrite flag
+  kubectl label pods foo bar-
+
+Options:
+    --all=false:
+	Select all resources, in the namespace of the specified resource types
+
+    -A, --all-namespaces=false:
+	If true, check the specified action in all namespaces.
+
+    --allow-missing-template-keys=true:
+	If true, ignore any errors in templates when a field or map key is missing in the template. Only applies to
+	golang and jsonpath output formats.
+
+    --dry-run='none':
+	Must be "none", "server", or "client". If client strategy, only print the object that would be sent, without
+	sending it. If server strategy, submit server-side request without persisting the resource.
+
+    --field-manager='kubectl-label':
+	Name of the manager used to track field ownership.
+
+    --field-selector='':
+	Selector (field query) to filter on, supports '=', '==', and '!='.(e.g. --field-selector
+	key1=value1,key2=value2). The server only supports a limited number of field queries per type.
+
+    -f, --filename=[]:
+	Filename, directory, or URL to files identifying the resource to update the labels
+
+    -k, --kustomize='':
+	Process the kustomization directory. This flag can't be used together with -f or -R.
+
+    --list=false:
+	If true, display the labels for a given resource.
+
+    --local=false:
+	If true, label will NOT contact api-server but run locally.
+
+    -o, --output='':
+	Output format. One of: (json, yaml, name, go-template, go-template-file, template, templatefile, jsonpath,
+	jsonpath-as-json, jsonpath-file).
+
+    --overwrite=false:
+	If true, allow labels to be overwritten, otherwise reject label updates that overwrite existing labels.
+
+    -R, --recursive=false:
+	Process the directory used in -f, --filename recursively. Useful when you want to manage related manifests
+	organized within the same directory.
+
+    --resource-version='':
+	If non-empty, the labels update will only succeed if this is the current resource-version for the object. Only
+	valid when specifying a single resource.
+
+    -l, --selector='':
+	Selector (label query) to filter on, supports '=', '==', and '!='.(e.g. -l key1=value1,key2=value2). Matching
+	objects must satisfy all of the specified label constraints.
+
+    --show-managed-fields=false:
+	If true, keep the managedFields when printing objects in JSON or YAML format.
+
+    --template='':
+	Template string or path to template file to use when -o=go-template, -o=go-template-file. The template format
+	is golang templates [http://golang.org/pkg/text/template/#pkg-overview].
+
+Usage:
+  kubectl label [--overwrite] (-f FILENAME | TYPE NAME) KEY_1=VAL_1 ... KEY_N=VAL_N [--resource-version=version]
+[options]
+
+Use "kubectl options" for a list of global command-line options (applies to all commands).
 ```
 
 ```bash
-kubectl 
+kubectl label pods --all type=webserver -n my-nginx-namespace
 ```
 
 **Sample Output:**
 ```bash
+$ kubectl label pods --all type=webserver -n my-nginx-namespace
 
+pod/my-nginx-deployment-9cbcd46b4-42n2q labeled
+pod/my-nginx-deployment-9cbcd46b4-6hlwl labeled
+pod/my-nginx-deployment-9cbcd46b4-7t2fr labeled
+pod/my-nginx-deployment-9cbcd46b4-bls2n labeled
+pod/my-nginx-deployment-9cbcd46b4-f4lkn labeled
+pod/my-nginx-deployment-9cbcd46b4-mxxbl labeled
+pod/my-nginx-deployment-9cbcd46b4-nq7xw labeled
+pod/my-nginx-deployment-9cbcd46b4-smcv6 labeled
+pod/my-nginx-deployment-9cbcd46b4-sz27h labeled
+pod/my-nginx-deployment-9cbcd46b4-v8bp5 labeled
+```
+
+```bash
+kubectl get pods -n my-nginx-namespace --show-labels
+```
+
+**Sample Output:**
+```bash
+$ kubectl get pods -n my-nginx-namespace --show-labels
+
+NAME                                  READY   STATUS    RESTARTS   AGE    LABELS
+my-nginx-deployment-9cbcd46b4-42n2q   1/1     Running   0          23h    app=my-nginx-deployment,pod-template-hash=9cbcd46b4,type=webserver
+my-nginx-deployment-9cbcd46b4-6hlwl   1/1     Running   0          98m    app=my-nginx-deployment,pod-template-hash=9cbcd46b4,type=webserver
+my-nginx-deployment-9cbcd46b4-7t2fr   1/1     Running   0          98m    app=my-nginx-deployment,pod-template-hash=9cbcd46b4,type=webserver
+my-nginx-deployment-9cbcd46b4-bls2n   1/1     Running   0          98m    app=my-nginx-deployment,pod-template-hash=9cbcd46b4,type=webserver
+my-nginx-deployment-9cbcd46b4-f4lkn   1/1     Running   0          98m    app=my-nginx-deployment,pod-template-hash=9cbcd46b4,type=webserver
+my-nginx-deployment-9cbcd46b4-mxxbl   1/1     Running   0          98m    app=my-nginx-deployment,pod-template-hash=9cbcd46b4,type=webserver
+my-nginx-deployment-9cbcd46b4-nq7xw   1/1     Running   0          106m   app=my-nginx-deployment,pod-template-hash=9cbcd46b4,type=webserver
+my-nginx-deployment-9cbcd46b4-smcv6   1/1     Running   0          106m   app=my-nginx-deployment,pod-template-hash=9cbcd46b4,type=webserver
+my-nginx-deployment-9cbcd46b4-sz27h   1/1     Running   0          98m    app=my-nginx-deployment,pod-template-hash=9cbcd46b4,type=webserver
+my-nginx-deployment-9cbcd46b4-v8bp5   1/1     Running   0          98m    app=my-nginx-deployment,pod-template-hash=9cbcd46b4,type=webserver
+```
+
+```bash
+kubectl label pods --all type- -n my-nginx-namespace
+```
+
+**Sample Output:**
+```bash
+$ kubectl label pods --all type- -n my-nginx-namespace
+
+pod/my-nginx-deployment-9cbcd46b4-42n2q unlabeled
+pod/my-nginx-deployment-9cbcd46b4-6hlwl unlabeled
+pod/my-nginx-deployment-9cbcd46b4-7t2fr unlabeled
+pod/my-nginx-deployment-9cbcd46b4-bls2n unlabeled
+pod/my-nginx-deployment-9cbcd46b4-f4lkn unlabeled
+pod/my-nginx-deployment-9cbcd46b4-mxxbl unlabeled
+pod/my-nginx-deployment-9cbcd46b4-nq7xw unlabeled
+pod/my-nginx-deployment-9cbcd46b4-smcv6 unlabeled
+pod/my-nginx-deployment-9cbcd46b4-sz27h unlabeled
+pod/my-nginx-deployment-9cbcd46b4-v8bp5 unlabeled
+```
+
+```bash
+kubectl get pods -n my-nginx-namespace --show-labels
+```
+
+**Sample Output:**
+```bash
+$ kubectl get pods -n my-nginx-namespace --show-labels
+
+NAME                                  READY   STATUS    RESTARTS   AGE    LABELS
+my-nginx-deployment-9cbcd46b4-42n2q   1/1     Running   0          23h    app=my-nginx-deployment,pod-template-hash=9cbcd46b4
+my-nginx-deployment-9cbcd46b4-6hlwl   1/1     Running   0          102m   app=my-nginx-deployment,pod-template-hash=9cbcd46b4
+my-nginx-deployment-9cbcd46b4-7t2fr   1/1     Running   0          102m   app=my-nginx-deployment,pod-template-hash=9cbcd46b4
+my-nginx-deployment-9cbcd46b4-bls2n   1/1     Running   0          102m   app=my-nginx-deployment,pod-template-hash=9cbcd46b4
+my-nginx-deployment-9cbcd46b4-f4lkn   1/1     Running   0          102m   app=my-nginx-deployment,pod-template-hash=9cbcd46b4
+my-nginx-deployment-9cbcd46b4-mxxbl   1/1     Running   0          102m   app=my-nginx-deployment,pod-template-hash=9cbcd46b4
+my-nginx-deployment-9cbcd46b4-nq7xw   1/1     Running   0          110m   app=my-nginx-deployment,pod-template-hash=9cbcd46b4
+my-nginx-deployment-9cbcd46b4-smcv6   1/1     Running   0          110m   app=my-nginx-deployment,pod-template-hash=9cbcd46b4
+my-nginx-deployment-9cbcd46b4-sz27h   1/1     Running   0          102m   app=my-nginx-deployment,pod-template-hash=9cbcd46b4
+my-nginx-deployment-9cbcd46b4-v8bp5   1/1     Running   0          102m   app=my-nginx-deployment,pod-template-hash=9cbcd46b4
+```
+
+```bash
+kubectl get all -n my-nginx-namespace --show-labels
+```
+
+**Sample Output:**
+```bash
+$ kubectl get all -n my-nginx-namespace --show-labels
+
+NAME                                      READY   STATUS    RESTARTS   AGE    LABELS
+pod/my-nginx-deployment-9cbcd46b4-42n2q   1/1     Running   0          23h    app=my-nginx-deployment,pod-template-hash=9cbcd46b4
+pod/my-nginx-deployment-9cbcd46b4-6hlwl   1/1     Running   0          105m   app=my-nginx-deployment,pod-template-hash=9cbcd46b4
+pod/my-nginx-deployment-9cbcd46b4-7t2fr   1/1     Running   0          105m   app=my-nginx-deployment,pod-template-hash=9cbcd46b4
+pod/my-nginx-deployment-9cbcd46b4-bls2n   1/1     Running   0          105m   app=my-nginx-deployment,pod-template-hash=9cbcd46b4
+pod/my-nginx-deployment-9cbcd46b4-f4lkn   1/1     Running   0          105m   app=my-nginx-deployment,pod-template-hash=9cbcd46b4
+pod/my-nginx-deployment-9cbcd46b4-mxxbl   1/1     Running   0          105m   app=my-nginx-deployment,pod-template-hash=9cbcd46b4
+pod/my-nginx-deployment-9cbcd46b4-nq7xw   1/1     Running   0          113m   app=my-nginx-deployment,pod-template-hash=9cbcd46b4
+pod/my-nginx-deployment-9cbcd46b4-smcv6   1/1     Running   0          113m   app=my-nginx-deployment,pod-template-hash=9cbcd46b4
+pod/my-nginx-deployment-9cbcd46b4-sz27h   1/1     Running   0          105m   app=my-nginx-deployment,pod-template-hash=9cbcd46b4
+pod/my-nginx-deployment-9cbcd46b4-v8bp5   1/1     Running   0          105m   app=my-nginx-deployment,pod-template-hash=9cbcd46b4
+
+NAME                       TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)    AGE    LABELS
+service/my-nginx-service   ClusterIP   10.111.212.138   <none>        8888/TCP   149m   app=my-nginx-service
+
+NAME                                  READY   UP-TO-DATE   AVAILABLE   AGE   LABELS
+deployment.apps/my-nginx-deployment   10/10   10           10          23h   app=my-nginx-deployment
+
+NAME                                            DESIRED   CURRENT   READY   AGE   LABELS
+replicaset.apps/my-nginx-deployment-9cbcd46b4   10        10        10      23h   app=my-nginx-deployment,pod-template-hash=9cbcd46b4
+```
+
+```bash
+kubectl label deploy my-nginx-deployment type=webserver -n my-nginx-namespace
+```
+
+**Sample Output:**
+```bash
+$ kubectl label deploy my-nginx-deployment type=webserver -n my-nginx-namespace
+
+deployment.apps/my-nginx-deployment labeled
+```
+
+```bash
+kubectl get all -n my-nginx-namespace --show-labels
+```
+
+**Sample Output:**
+```bash
+$ kubectl get all -n my-nginx-namespace --show-labels
+
+NAME                                      READY   STATUS    RESTARTS   AGE    LABELS
+pod/my-nginx-deployment-9cbcd46b4-42n2q   1/1     Running   0          23h    app=my-nginx-deployment,pod-template-hash=9cbcd46b4
+pod/my-nginx-deployment-9cbcd46b4-6hlwl   1/1     Running   0          107m   app=my-nginx-deployment,pod-template-hash=9cbcd46b4
+pod/my-nginx-deployment-9cbcd46b4-7t2fr   1/1     Running   0          107m   app=my-nginx-deployment,pod-template-hash=9cbcd46b4
+pod/my-nginx-deployment-9cbcd46b4-bls2n   1/1     Running   0          107m   app=my-nginx-deployment,pod-template-hash=9cbcd46b4
+pod/my-nginx-deployment-9cbcd46b4-f4lkn   1/1     Running   0          107m   app=my-nginx-deployment,pod-template-hash=9cbcd46b4
+pod/my-nginx-deployment-9cbcd46b4-mxxbl   1/1     Running   0          107m   app=my-nginx-deployment,pod-template-hash=9cbcd46b4
+pod/my-nginx-deployment-9cbcd46b4-nq7xw   1/1     Running   0          115m   app=my-nginx-deployment,pod-template-hash=9cbcd46b4
+pod/my-nginx-deployment-9cbcd46b4-smcv6   1/1     Running   0          115m   app=my-nginx-deployment,pod-template-hash=9cbcd46b4
+pod/my-nginx-deployment-9cbcd46b4-sz27h   1/1     Running   0          107m   app=my-nginx-deployment,pod-template-hash=9cbcd46b4
+pod/my-nginx-deployment-9cbcd46b4-v8bp5   1/1     Running   0          107m   app=my-nginx-deployment,pod-template-hash=9cbcd46b4
+
+NAME                       TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)    AGE    LABELS
+service/my-nginx-service   ClusterIP   10.111.212.138   <none>        8888/TCP   151m   app=my-nginx-service
+
+NAME                                  READY   UP-TO-DATE   AVAILABLE   AGE   LABELS
+deployment.apps/my-nginx-deployment   10/10   10           10          23h   app=my-nginx-deployment,type=webserver
+
+NAME                                            DESIRED   CURRENT   READY   AGE   LABELS
+replicaset.apps/my-nginx-deployment-9cbcd46b4   10        10        10      23h   app=my-nginx-deployment,pod-template-hash=9cbcd46b4
+```
+
+```bash
+kubectl label pods,rs --all type=webserver -n my-nginx-namespace
+```
+
+**Sample Output:**
+```bash
+$ kubectl label pods,rs --all type=webserver -n my-nginx-namespace
+
+pod/my-nginx-deployment-9cbcd46b4-42n2q labeled
+pod/my-nginx-deployment-9cbcd46b4-6hlwl labeled
+pod/my-nginx-deployment-9cbcd46b4-7t2fr labeled
+pod/my-nginx-deployment-9cbcd46b4-bls2n labeled
+pod/my-nginx-deployment-9cbcd46b4-f4lkn labeled
+pod/my-nginx-deployment-9cbcd46b4-mxxbl labeled
+pod/my-nginx-deployment-9cbcd46b4-nq7xw labeled
+pod/my-nginx-deployment-9cbcd46b4-smcv6 labeled
+pod/my-nginx-deployment-9cbcd46b4-sz27h labeled
+pod/my-nginx-deployment-9cbcd46b4-v8bp5 labeled
+replicaset.apps/my-nginx-deployment-9cbcd46b4 labeled
+```
+
+```bash
+kubectl get all -n my-nginx-namespace --show-labels
+```
+
+**Sample Output:**
+```bash
+$ kubectl get all -n my-nginx-namespace --show-labels
+NAME                                      READY   STATUS    RESTARTS   AGE    LABELS
+pod/my-nginx-deployment-9cbcd46b4-42n2q   1/1     Running   0          23h    app=my-nginx-deployment,pod-template-hash=9cbcd46b4,type=webserver
+pod/my-nginx-deployment-9cbcd46b4-6hlwl   1/1     Running   0          110m   app=my-nginx-deployment,pod-template-hash=9cbcd46b4,type=webserver
+pod/my-nginx-deployment-9cbcd46b4-7t2fr   1/1     Running   0          110m   app=my-nginx-deployment,pod-template-hash=9cbcd46b4,type=webserver
+pod/my-nginx-deployment-9cbcd46b4-bls2n   1/1     Running   0          110m   app=my-nginx-deployment,pod-template-hash=9cbcd46b4,type=webserver
+pod/my-nginx-deployment-9cbcd46b4-f4lkn   1/1     Running   0          110m   app=my-nginx-deployment,pod-template-hash=9cbcd46b4,type=webserver
+pod/my-nginx-deployment-9cbcd46b4-mxxbl   1/1     Running   0          110m   app=my-nginx-deployment,pod-template-hash=9cbcd46b4,type=webserver
+pod/my-nginx-deployment-9cbcd46b4-nq7xw   1/1     Running   0          117m   app=my-nginx-deployment,pod-template-hash=9cbcd46b4,type=webserver
+pod/my-nginx-deployment-9cbcd46b4-smcv6   1/1     Running   0          117m   app=my-nginx-deployment,pod-template-hash=9cbcd46b4,type=webserver
+pod/my-nginx-deployment-9cbcd46b4-sz27h   1/1     Running   0          110m   app=my-nginx-deployment,pod-template-hash=9cbcd46b4,type=webserver
+pod/my-nginx-deployment-9cbcd46b4-v8bp5   1/1     Running   0          110m   app=my-nginx-deployment,pod-template-hash=9cbcd46b4,type=webserver
+
+NAME                       TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)    AGE    LABELS
+service/my-nginx-service   ClusterIP   10.111.212.138   <none>        8888/TCP   154m   app=my-nginx-service
+
+NAME                                  READY   UP-TO-DATE   AVAILABLE   AGE   LABELS
+deployment.apps/my-nginx-deployment   10/10   10           10          23h   app=my-nginx-deployment,type=webserver
+
+NAME                                            DESIRED   CURRENT   READY   AGE   LABELS
+replicaset.apps/my-nginx-deployment-9cbcd46b4   10        10        10      23h   app=my-nginx-deployment,pod-template-hash=9cbcd46b4,type=webserver
+```
+
+```bash
+kubectl label pods,rs,deploy --all type- -n my-nginx-namespace
+```
+
+**Sample Output:**
+```bash
+$ kubectl label pods,rs,deploy --all type- -n my-nginx-namespace
+
+pod/my-nginx-deployment-9cbcd46b4-42n2q unlabeled
+pod/my-nginx-deployment-9cbcd46b4-6hlwl unlabeled
+pod/my-nginx-deployment-9cbcd46b4-7t2fr unlabeled
+pod/my-nginx-deployment-9cbcd46b4-bls2n unlabeled
+pod/my-nginx-deployment-9cbcd46b4-f4lkn unlabeled
+pod/my-nginx-deployment-9cbcd46b4-mxxbl unlabeled
+pod/my-nginx-deployment-9cbcd46b4-nq7xw unlabeled
+pod/my-nginx-deployment-9cbcd46b4-smcv6 unlabeled
+pod/my-nginx-deployment-9cbcd46b4-sz27h unlabeled
+pod/my-nginx-deployment-9cbcd46b4-v8bp5 unlabeled
+replicaset.apps/my-nginx-deployment-9cbcd46b4 unlabeled
+deployment.apps/my-nginx-deployment unlabeled
+```
+
+```bash
+kubectl get all -n my-nginx-namespace --show-labels
+```
+
+**Sample Output:**
+```bash
+$ kubectl get all -n my-nginx-namespace --show-labels
+
+NAME                                      READY   STATUS    RESTARTS   AGE    LABELS
+pod/my-nginx-deployment-9cbcd46b4-42n2q   1/1     Running   0          23h    app=my-nginx-deployment,pod-template-hash=9cbcd46b4
+pod/my-nginx-deployment-9cbcd46b4-6hlwl   1/1     Running   0          112m   app=my-nginx-deployment,pod-template-hash=9cbcd46b4
+pod/my-nginx-deployment-9cbcd46b4-7t2fr   1/1     Running   0          112m   app=my-nginx-deployment,pod-template-hash=9cbcd46b4
+pod/my-nginx-deployment-9cbcd46b4-bls2n   1/1     Running   0          112m   app=my-nginx-deployment,pod-template-hash=9cbcd46b4
+pod/my-nginx-deployment-9cbcd46b4-f4lkn   1/1     Running   0          112m   app=my-nginx-deployment,pod-template-hash=9cbcd46b4
+pod/my-nginx-deployment-9cbcd46b4-mxxbl   1/1     Running   0          112m   app=my-nginx-deployment,pod-template-hash=9cbcd46b4
+pod/my-nginx-deployment-9cbcd46b4-nq7xw   1/1     Running   0          120m   app=my-nginx-deployment,pod-template-hash=9cbcd46b4
+pod/my-nginx-deployment-9cbcd46b4-smcv6   1/1     Running   0          120m   app=my-nginx-deployment,pod-template-hash=9cbcd46b4
+pod/my-nginx-deployment-9cbcd46b4-sz27h   1/1     Running   0          112m   app=my-nginx-deployment,pod-template-hash=9cbcd46b4
+pod/my-nginx-deployment-9cbcd46b4-v8bp5   1/1     Running   0          112m   app=my-nginx-deployment,pod-template-hash=9cbcd46b4
+
+NAME                       TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)    AGE    LABELS
+service/my-nginx-service   ClusterIP   10.111.212.138   <none>        8888/TCP   156m   app=my-nginx-service
+
+NAME                                  READY   UP-TO-DATE   AVAILABLE   AGE   LABELS
+deployment.apps/my-nginx-deployment   10/10   10           10          23h   app=my-nginx-deployment
+
+NAME                                            DESIRED   CURRENT   READY   AGE   LABELS
+replicaset.apps/my-nginx-deployment-9cbcd46b4   10        10        10      23h   app=my-nginx-deployment,pod-template-hash=9cbcd46b4
+```
+
+```bash
+kubectl get nodes --show-labels
+```
+
+**Sample Output:**
+```bash
+$ kubectl get nodes --show-labels
+
+NAME               STATUS   ROLES           AGE   VERSION   LABELS
+control-plane-01   Ready    control-plane   8d    v1.26.1   beta.kubernetes.io/arch=amd64,beta.kubernetes.io/os=linux,kubernetes.io/arch=amd64,kubernetes.io/hostname=control-plane-01,kubernetes.io/os=linux,node-role.kubernetes.io/control-plane=,node.kubernetes.io/exclude-from-external-load-balancers=
+worker-node-01     Ready    <none>          8d    v1.26.1   beta.kubernetes.io/arch=amd64,beta.kubernetes.io/os=linux,kubernetes.io/arch=amd64,kubernetes.io/hostname=worker-node-01,kubernetes.io/os=linux
 ```
 
 
+
+Again, labels and Selectors play an important role in Kubernetes, so be sure to read the [Labels and Selectors](https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/) documentation and know the things of value contained within.
 
 ***Transition***
 
@@ -1894,29 +2270,206 @@ kubectl
 
 ```
 
+```bash
+kubectl 
+```
+
+**Sample Output:**
+```bash
+
+```
+
+```bash
+kubectl 
+```
+
+**Sample Output:**
+```bash
+
+```
+
+```bash
+kubectl 
+```
+
+**Sample Output:**
+```bash
+
+```
+
+```bash
+kubectl 
+```
+
+**Sample Output:**
+```bash
+
+```
+
+```bash
+kubectl 
+```
+
+**Sample Output:**
+```bash
+
+```
+
+```bash
+kubectl 
+```
+
+**Sample Output:**
+```bash
+
+```
+
+```bash
+kubectl 
+```
+
+**Sample Output:**
+```bash
+
+```
+
+```bash
+kubectl 
+```
+
+**Sample Output:**
+```bash
+
+```
+
+```bash
+kubectl 
+```
+
+**Sample Output:**
+```bash
+
+```
+
 
 ***Transition***
 
-## Exporting Running Kubernetes Objects to a Manifest Using `kubectl`
+## Exporting Running Kubernetes Objects to a Manifest Using `kubectl get`
 
 
 
 ```bash
-kubectl 
+kubectl get deploy my-nginx-deployment -n my-nginx-namespace -o yaml
 ```
 
 **Sample Output:**
 ```bash
+$ kubectl get deploy my-nginx-deployment -n my-nginx-namespace -o yaml
 
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    deployment.kubernetes.io/revision: "1"
+    kubectl.kubernetes.io/last-applied-configuration: |
+      {"apiVersion":"apps/v1","kind":"Deployment","metadata":{"annotations":{},"creationTimestamp":null,"labels":{"app":"my-nginx-deployment"},"name":"my-nginx-deployment","namespace":"my-nginx-namespace"},"spec":{"replicas":10,"selector":{"matchLabels":{"app":"my-nginx-deployment"}},"strategy":{},"template":{"metadata":{"creationTimestamp":null,"labels":{"app":"my-nginx-deployment"}},"spec":{"containers":[{"image":"nginx:latest","name":"nginx","ports":[{"containerPort":80}],"resources":{}}]}}},"status":{}}
+  creationTimestamp: "2023-04-27T19:19:11Z"
+  generation: 6
+  labels:
+    app: my-nginx-deployment
+  name: my-nginx-deployment
+  namespace: my-nginx-namespace
+  resourceVersion: "979655"
+  uid: 26df08d5-4b69-41a5-acc8-d444fc4239bd
+spec:
+  progressDeadlineSeconds: 600
+  replicas: 10
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      app: my-nginx-deployment
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: my-nginx-deployment
+    spec:
+      containers:
+      - image: nginx:latest
+        imagePullPolicy: Always
+        name: nginx
+        ports:
+        - containerPort: 80
+          protocol: TCP
+        resources: {}
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      terminationGracePeriodSeconds: 30
+status:
+  availableReplicas: 10
+  conditions:
+  - lastTransitionTime: "2023-04-27T19:19:11Z"
+    lastUpdateTime: "2023-04-27T19:19:20Z"
+    message: ReplicaSet "my-nginx-deployment-9cbcd46b4" has successfully progressed.
+    reason: NewReplicaSetAvailable
+    status: "True"
+    type: Progressing
+  - lastTransitionTime: "2023-04-28T16:44:39Z"
+    lastUpdateTime: "2023-04-28T16:44:39Z"
+    message: Deployment has minimum availability.
+    reason: MinimumReplicasAvailable
+    status: "True"
+    type: Available
+  observedGeneration: 6
+  readyReplicas: 10
+  replicas: 10
+  updatedReplicas: 10
 ```
 
 ```bash
-kubectl 
+cat my-nginx-deployment.yaml
 ```
 
 **Sample Output:**
 ```bash
+$ cat my-nginx-deployment.yaml
 
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: my-nginx-deployment
+  name: my-nginx-deployment
+  namespace: my-nginx-namespace
+spec:
+  replicas: 10
+  selector:
+    matchLabels:
+      app: my-nginx-deployment
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: my-nginx-deployment
+    spec:
+      containers:
+      - image: nginx:latest
+        name: nginx
+        ports:
+        - containerPort: 80
+        resources: {}
+status: {}
 ```
 
 ```bash
