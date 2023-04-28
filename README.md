@@ -7,7 +7,7 @@ I'm currently studying to take the **CKAD** and **CKA** exams, and there remain 
 
 Using the `kubectl` command imperatively to create Kubernetes manifests for declarative deployment, an important skill for both exams, lands at the top of that list. On the **CKAD** and **CKA** exams, *every second counts*, and this skill facilitates the *rapid and consistent generation* of **YAML** manifests that can *quickly* be edited and deployed to Kubernetes.
 
-**What makes this skill so important?**
+***What makes this skill so important?***
 
 - Fast: *Seconds count.* Less reliant on finding an example in the docs, then copying it.
 - Accurate: *No typos. No formatting errors.* Manifest works the first time.
@@ -15,7 +15,7 @@ Using the `kubectl` command imperatively to create Kubernetes manifests for decl
 
 [Adrien Trouillaud](https://www.linkedin.com/in/trouillaud/) wrote an excellent Medium article, [Imperative vs. Declarative — a Kubernetes Tutorial](https://medium.com/payscale-tech/imperative-vs-declarative-a-kubernetes-tutorial-4be66c5d8914), which I discovered while researching this topic. Adrien's article, a comprehensive tutorial on how to leverage the imperative approach to creating objects in Kubernetes, clarified the topic for me. The article dates back to early 2019, so some of the syntax has changed, but the concepts in the article still ring true. I learned even more by digging into the commands and updating the syntax, where needed. *I would highly recommend giving it a read.*
 
-In this tutorial, we're going to get *hands-on* with using the `kubectl` command *imperatively* to create some common objects as *declarative* YAML manifests.
+In this tutorial, you're not only going to learn about the `kubectl` command, you're going to get *hands-on* with using the `kubectl` command *imperatively* to create some common objects, as well as some *declarative* YAML manifests.
 
 ***Let's dig in!***
 
