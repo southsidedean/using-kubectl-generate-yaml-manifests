@@ -35,7 +35,13 @@ In this tutorial, we're going to get *hands-on* with using the `kubectl` command
 
 [Kubernetes: Managing Kubernetes Objects Using Imperative Commands](https://kubernetes.io/docs/tasks/manage-kubernetes-objects/imperative-command/)
 
-[]()
+[Kubernetes: Service](https://kubernetes.io/docs/concepts/services-networking/service/)
+
+[Kubernetes: Use a Service to Access an Application in a Cluster](https://kubernetes.io/docs/tasks/access-application-cluster/service-access-application-cluster/)
+
+[Kubernetes: ReplicaSet](https://kubernetes.io/docs/concepts/workloads/controllers/replicaset/)
+
+[Kubernetes: Deployments](https://kubernetes.io/docs/concepts/workloads/controllers/deployment/)
 
 []()
 
@@ -1097,17 +1103,16 @@ replicaset.apps/my-nginx-deployment-9cbcd46b4   3         3         3       55s
 ```
 
 ```bash
-kubectl get pods -o wide -n my-nginx-namespace
+kubectl get pods -o wide -n my-nginx-namespace --show-labels
 ```
 
 **Sample Output:**
 ```bash
-$ kubectl get pods -o wide -n my-nginx-namespace
-
-NAME                                  READY   STATUS    RESTARTS   AGE     IP                NODE               NOMINATED NODE   READINESS GATES
-my-nginx-deployment-9cbcd46b4-42n2q   1/1     Running   0          2m10s   192.168.173.196   control-plane-01   <none>           <none>
-my-nginx-deployment-9cbcd46b4-7nmn8   1/1     Running   0          2m10s   192.168.126.204   worker-node-01     <none>           <none>
-my-nginx-deployment-9cbcd46b4-xt89j   1/1     Running   0          2m10s   192.168.126.203   worker-node-01     <none>           <none>
+$ kubectl get pods -o wide -n my-nginx-namespace --show-labels
+NAME                                  READY   STATUS    RESTARTS   AGE   IP                NODE               NOMINATED NODE   READINESS GATES   LABELS
+my-nginx-deployment-9cbcd46b4-42n2q   1/1     Running   0          20h   192.168.173.196   control-plane-01   <none>           <none>            app=my-nginx-deployment,pod-template-hash=9cbcd46b4
+my-nginx-deployment-9cbcd46b4-7nmn8   1/1     Running   0          20h   192.168.126.204   worker-node-01     <none>           <none>            app=my-nginx-deployment,pod-template-hash=9cbcd46b4
+my-nginx-deployment-9cbcd46b4-xt89j   1/1     Running   0          20h   192.168.126.203   worker-node-01     <none>           <none>            app=my-nginx-deployment,pod-template-hash=9cbcd46b4
 ```
 
 Test using `curl`, replace with any of your three pods; IP addresses:
@@ -1152,17 +1157,37 @@ The NGINX web server in our `nginx-pod` Pods respond with the default web page. 
 
 ***Transition***
 
-## Creating a Service Manifest Using the `kubectl create` Command
+## Creating a Service Manifest Using the `kubectl create service` and `kubectl set selector` Commands
+
+[Kubernetes: Service](https://kubernetes.io/docs/concepts/services-networking/service/)
+
+[Kubernetes: Use a Service to Access an Application in a Cluster](https://kubernetes.io/docs/tasks/access-application-cluster/service-access-application-cluster/)
+
+[Kubernetes: Managing Kubernetes Objects Using Imperative Commands](https://kubernetes.io/docs/tasks/manage-kubernetes-objects/imperative-command/)
+
 
 
 
 ```bash
-kubectl create svc --help
+kubectl get service -A
 ```
 
 **Sample Output:**
 ```bash
-$ kubectl create svc --help
+$ kubectl get service -A
+
+NAMESPACE     NAME         TYPE        CLUSTER-IP   EXTERNAL-IP   PORT(S)                  AGE
+default       kubernetes   ClusterIP   10.96.0.1    <none>        443/TCP                  7d4h
+kube-system   kube-dns     ClusterIP   10.96.0.10   <none>        53/UDP,53/TCP,9153/TCP   7d4h
+```
+
+```bash
+kubectl create service --help
+```
+
+**Sample Output:**
+```bash
+$ kubectl create service --help
 
 Create a service using a specified subcommand.
 
@@ -1186,74 +1211,617 @@ commands).
 
 
 ```bash
-kubectl create svc clusterip --help
+kubectl create service clusterip --help
 ```
 
 **Sample Output:**
 ```bash
+$ kubectl create service clusterip --help
 
+Create a ClusterIP service with the specified name.
+
+Examples:
+  # Create a new ClusterIP service named my-cs
+  kubectl create service clusterip my-cs --tcp=5678:8080
+
+  # Create a new ClusterIP service named my-cs (in headless mode)
+  kubectl create service clusterip my-cs --clusterip="None"
+
+Options:
+    --allow-missing-template-keys=true:
+	If true, ignore any errors in templates when a field or map key is missing in the template. Only applies to
+	golang and jsonpath output formats.
+
+    --clusterip='':
+	Assign your own ClusterIP or set to 'None' for a 'headless' service (no loadbalancing).
+
+    --dry-run='none':
+	Must be "none", "server", or "client". If client strategy, only print the object that would be sent, without
+	sending it. If server strategy, submit server-side request without persisting the resource.
+
+    --field-manager='kubectl-create':
+	Name of the manager used to track field ownership.
+
+    -o, --output='':
+	Output format. One of: (json, yaml, name, go-template, go-template-file, template, templatefile, jsonpath,
+	jsonpath-as-json, jsonpath-file).
+
+    --save-config=false:
+	If true, the configuration of current object will be saved in its annotation. Otherwise, the annotation will
+	be unchanged. This flag is useful when you want to perform kubectl apply on this object in the future.
+
+    --show-managed-fields=false:
+	If true, keep the managedFields when printing objects in JSON or YAML format.
+
+    --tcp=[]:
+	Port pairs can be specified as '<port>:<targetPort>'.
+
+    --template='':
+	Template string or path to template file to use when -o=go-template, -o=go-template-file. The template format
+	is golang templates [http://golang.org/pkg/text/template/#pkg-overview].
+
+    --validate='strict':
+	Must be one of: strict (or true), warn, ignore (or false). 		"true" or "strict" will use a schema to validate
+	the input and fail the request if invalid. It will perform server side validation if ServerSideFieldValidation
+	is enabled on the api-server, but will fall back to less reliable client-side validation if not. 		"warn" will
+	warn about unknown or duplicate fields without blocking the request if server-side field validation is enabled
+	on the API server, and behave as "ignore" otherwise. 		"false" or "ignore" will not perform any schema
+	validation, silently dropping any unknown or duplicate fields.
+
+Usage:
+  kubectl create service clusterip NAME [--tcp=<port>:<targetPort>] [--dry-run=server|client|none] [options]
+
+Use "kubectl options" for a list of global command-line options (applies to all commands).
+```
+
+
+
+```bash
+kubectl set selector --help
 ```
 
 **Sample Output:**
 ```bash
-$ kubectl get svc -A
+$ kubectl set selector --help
 
-NAMESPACE     NAME         TYPE        CLUSTER-IP   EXTERNAL-IP   PORT(S)                  AGE
-default       kubernetes   ClusterIP   10.96.0.1    <none>        443/TCP                  7d4h
-kube-system   kube-dns     ClusterIP   10.96.0.10   <none>        53/UDP,53/TCP,9153/TCP   7d4h
+Set the selector on a resource. Note that the new selector will overwrite the old selector if the resource had one prior
+to the invocation of 'set selector'.
+
+ A selector must begin with a letter or number, and may contain letters, numbers, hyphens, dots, and underscores, up to
+63 characters. If --resource-version is specified, then updates will use this resource version, otherwise the existing
+resource-version will be used. Note: currently selectors can only be set on Service objects.
+
+Examples:
+  # Set the labels and selector before creating a deployment/service pair
+  kubectl create service clusterip my-svc --clusterip="None" -o yaml --dry-run=client | kubectl set selector --local -f
+- 'environment=qa' -o yaml | kubectl create -f -
+  kubectl create deployment my-dep -o yaml --dry-run=client | kubectl label --local -f - environment=qa -o yaml |
+kubectl create -f -
+
+Options:
+    --all=false:
+	Select all resources in the namespace of the specified resource types
+
+    --allow-missing-template-keys=true:
+	If true, ignore any errors in templates when a field or map key is missing in the template. Only applies to
+	golang and jsonpath output formats.
+
+    --dry-run='none':
+	Must be "none", "server", or "client". If client strategy, only print the object that would be sent, without
+	sending it. If server strategy, submit server-side request without persisting the resource.
+
+    --field-manager='kubectl-set':
+	Name of the manager used to track field ownership.
+
+    -f, --filename=[]:
+	identifying the resource.
+
+    --local=false:
+	If true, annotation will NOT contact api-server but run locally.
+
+    -o, --output='':
+	Output format. One of: (json, yaml, name, go-template, go-template-file, template, templatefile, jsonpath,
+	jsonpath-as-json, jsonpath-file).
+
+    -R, --recursive=true:
+	Process the directory used in -f, --filename recursively. Useful when you want to manage related manifests
+	organized within the same directory.
+
+    --resource-version='':
+	If non-empty, the selectors update will only succeed if this is the current resource-version for the object.
+	Only valid when specifying a single resource.
+
+    --show-managed-fields=false:
+	If true, keep the managedFields when printing objects in JSON or YAML format.
+
+    --template='':
+	Template string or path to template file to use when -o=go-template, -o=go-template-file. The template format
+	is golang templates [http://golang.org/pkg/text/template/#pkg-overview].
+
+Usage:
+  kubectl set selector (-f FILENAME | TYPE NAME) EXPRESSIONS [--resource-version=version] [options]
+
+Use "kubectl options" for a list of global command-line options (applies to all commands).
+```
+
+
+```bash
+kubectl create service clusterip my-nginx-service --tcp=8888:80 --namespace my-nginx-namespace --dry-run=client --output=yaml | kubectl set selector --local -f - 'app=my-nginx-deployment' --output=yaml > my-nginx-service.yaml
 ```
 
 ```bash
-kubectl create svc --help
+cat my-nginx-service.yaml
 ```
 
 **Sample Output:**
 ```bash
+$ cat my-nginx-service.yaml
 
+apiVersion: v1
+kind: Service
+metadata:
+  creationTimestamp: null
+  labels:
+    app: my-nginx-service
+  name: my-nginx-service
+  namespace: my-nginx-namespace
+spec:
+  ports:
+  - name: 8888-80
+    port: 8888
+    protocol: TCP
+    targetPort: 80
+  selector:
+    app: my-nginx-deployment
+  type: ClusterIP
+status:
+  loadBalancer: {}
 ```
 
 ```bash
-kubectl 
+kubectl create -f my-nginx-service.yaml
 ```
 
 **Sample Output:**
 ```bash
+$ kubectl create -f my-nginx-service.yaml
 
+service/my-nginx-service created
+```
+
+
+```bash
+kubectl get service -A
+```
+
+**Sample Output:**
+```bash
+$ kubectl get service -A
+NAMESPACE            NAME               TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)                  AGE
+default              kubernetes         ClusterIP   10.96.0.1        <none>        443/TCP                  8d
+kube-system          kube-dns           ClusterIP   10.96.0.10       <none>        53/UDP,53/TCP,9153/TCP   8d
+my-nginx-namespace   my-nginx-service   ClusterIP   10.111.212.138   <none>        8888/TCP                 6s
+```
+
+
+```bash
+kubectl get all -n my-nginx-namespace
+```
+
+**Sample Output:**
+```bash
+$ kubectl get all -n my-nginx-namespace
+
+NAME                                      READY   STATUS    RESTARTS   AGE
+pod/my-nginx-deployment-9cbcd46b4-42n2q   1/1     Running   0          20h
+pod/my-nginx-deployment-9cbcd46b4-7nmn8   1/1     Running   0          20h
+pod/my-nginx-deployment-9cbcd46b4-xt89j   1/1     Running   0          20h
+
+NAME                       TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)    AGE
+service/my-nginx-service   ClusterIP   10.111.212.138   <none>        8888/TCP   3m35s
+
+NAME                                  READY   UP-TO-DATE   AVAILABLE   AGE
+deployment.apps/my-nginx-deployment   3/3     3            3           20h
+
+NAME                                            DESIRED   CURRENT   READY   AGE
+replicaset.apps/my-nginx-deployment-9cbcd46b4   3         3         3       20h
+```
+
+```bash
+curl http://10.111.212.138:8888
+```
+
+**Sample Output:**
+```bash
+$ curl http://10.111.212.138:8888
+
+<!DOCTYPE html>
+<html>
+<head>
+<title>Welcome to nginx!</title>
+<style>
+html { color-scheme: light dark; }
+body { width: 35em; margin: 0 auto;
+font-family: Tahoma, Verdana, Arial, sans-serif; }
+</style>
+</head>
+<body>
+<h1>Welcome to nginx!</h1>
+<p>If you see this page, the nginx web server is successfully installed and
+working. Further configuration is required.</p>
+
+<p>For online documentation and support please refer to
+<a href="http://nginx.org/">nginx.org</a>.<br/>
+Commercial support is available at
+<a href="http://nginx.com/">nginx.com</a>.</p>
+
+<p><em>Thank you for using nginx.</em></p>
+</body>
+</html>
 ```
 
 
 
 ***Transition***
 
-## Scaling a Replica Set Using the `kubectl scale` Command
+## Scaling a Deployment/ReplicaSet Using the `kubectl scale` Command
+
+[Kubernetes: ReplicaSet](https://kubernetes.io/docs/concepts/workloads/controllers/replicaset/)
+
+[Kubernetes: Deployments](https://kubernetes.io/docs/concepts/workloads/controllers/deployment/)
 
 
 
 ```bash
-kubectl 
+kubectl get rs -n my-nginx-namespace
 ```
 
 **Sample Output:**
 ```bash
+$ kubectl get rs -n my-nginx-namespace
 
+NAME                            DESIRED   CURRENT   READY   AGE
+my-nginx-deployment-9cbcd46b4   3         3         3       21h
 ```
 
 ```bash
-kubectl 
-```
-
-**Sample Output:**
-```bash
-
-```
-
-```bash
-kubectl 
+kubectl describe rs <YOUR_REPLICA_SET> -n my-nginx-namespace
 ```
 
 **Sample Output:**
 ```bash
+$ kubectl describe rs my-nginx-deployment-9cbcd46b4 -n my-nginx-namespace
 
+Name:           my-nginx-deployment-9cbcd46b4
+Namespace:      my-nginx-namespace
+Selector:       app=my-nginx-deployment,pod-template-hash=9cbcd46b4
+Labels:         app=my-nginx-deployment
+                pod-template-hash=9cbcd46b4
+Annotations:    deployment.kubernetes.io/desired-replicas: 3
+                deployment.kubernetes.io/max-replicas: 4
+                deployment.kubernetes.io/revision: 1
+Controlled By:  Deployment/my-nginx-deployment
+Replicas:       3 current / 3 desired
+Pods Status:    3 Running / 0 Waiting / 0 Succeeded / 0 Failed
+Pod Template:
+  Labels:  app=my-nginx-deployment
+           pod-template-hash=9cbcd46b4
+  Containers:
+   nginx:
+    Image:        nginx:latest
+    Port:         80/TCP
+    Host Port:    0/TCP
+    Environment:  <none>
+    Mounts:       <none>
+  Volumes:        <none>
+Events:           <none>
+```
+
+```bash
+kubectl get all -n my-nginx-namespace
+```
+
+**Sample Output:**
+```bash
+$ kubectl get all -n my-nginx-namespace
+
+NAME                                      READY   STATUS    RESTARTS   AGE
+pod/my-nginx-deployment-9cbcd46b4-42n2q   1/1     Running   0          21h
+pod/my-nginx-deployment-9cbcd46b4-7nmn8   1/1     Running   0          21h
+pod/my-nginx-deployment-9cbcd46b4-xt89j   1/1     Running   0          21h
+
+NAME                       TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)    AGE
+service/my-nginx-service   ClusterIP   10.111.212.138   <none>        8888/TCP   22m
+
+NAME                                  READY   UP-TO-DATE   AVAILABLE   AGE
+deployment.apps/my-nginx-deployment   3/3     3            3           21h
+
+NAME                                            DESIRED   CURRENT   READY   AGE
+replicaset.apps/my-nginx-deployment-9cbcd46b4   3         3         3       21h
+```
+
+```bash
+kubectl scale --help
+```
+
+**Sample Output:**
+```bash
+$ kubectl scale --help
+
+Set a new size for a deployment, replica set, replication controller, or stateful set.
+
+ Scale also allows users to specify one or more preconditions for the scale action.
+
+ If --current-replicas or --resource-version is specified, it is validated before the scale is attempted, and it is
+guaranteed that the precondition holds true when the scale is sent to the server.
+
+Examples:
+  # Scale a replica set named 'foo' to 3
+  kubectl scale --replicas=3 rs/foo
+  
+  # Scale a resource identified by type and name specified in "foo.yaml" to 3
+  kubectl scale --replicas=3 -f foo.yaml
+  
+  # If the deployment named mysql's current size is 2, scale mysql to 3
+  kubectl scale --current-replicas=2 --replicas=3 deployment/mysql
+  
+  # Scale multiple replication controllers
+  kubectl scale --replicas=5 rc/foo rc/bar rc/baz
+  
+  # Scale stateful set named 'web' to 3
+  kubectl scale --replicas=3 statefulset/web
+
+Options:
+    --all=false:
+	Select all resources in the namespace of the specified resource types
+
+    --allow-missing-template-keys=true:
+	If true, ignore any errors in templates when a field or map key is missing in the template. Only applies to
+	golang and jsonpath output formats.
+
+    --current-replicas=-1:
+	Precondition for current size. Requires that the current size of the resource match this value in order to
+	scale. -1 (default) for no condition.
+
+    --dry-run='none':
+	Must be "none", "server", or "client". If client strategy, only print the object that would be sent, without
+	sending it. If server strategy, submit server-side request without persisting the resource.
+
+    -f, --filename=[]:
+	Filename, directory, or URL to files identifying the resource to set a new size
+
+    -k, --kustomize='':
+	Process the kustomization directory. This flag can't be used together with -f or -R.
+
+    -o, --output='':
+	Output format. One of: (json, yaml, name, go-template, go-template-file, template, templatefile, jsonpath,
+	jsonpath-as-json, jsonpath-file).
+
+    -R, --recursive=false:
+	Process the directory used in -f, --filename recursively. Useful when you want to manage related manifests
+	organized within the same directory.
+
+    --replicas=0:
+	The new desired number of replicas. Required.
+
+    --resource-version='':
+	Precondition for resource version. Requires that the current resource version match this value in order to
+	scale.
+
+    -l, --selector='':
+	Selector (label query) to filter on, supports '=', '==', and '!='.(e.g. -l key1=value1,key2=value2). Matching
+	objects must satisfy all of the specified label constraints.
+
+    --show-managed-fields=false:
+	If true, keep the managedFields when printing objects in JSON or YAML format.
+
+    --template='':
+	Template string or path to template file to use when -o=go-template, -o=go-template-file. The template format
+	is golang templates [http://golang.org/pkg/text/template/#pkg-overview].
+
+    --timeout=0s:
+	The length of time to wait before giving up on a scale operation, zero means don't wait. Any other values
+	should contain a corresponding time unit (e.g. 1s, 2m, 3h).
+
+Usage:
+  kubectl scale [--resource-version=version] [--current-replicas=count] --replicas=COUNT (-f FILENAME | TYPE NAME)
+[options]
+
+Use "kubectl options" for a list of global command-line options (applies to all commands).
+```
+
+
+```bash
+kubectl scale --replicas=10 rs <YOUR_REPLICA_SET>
+```
+
+**Sample Output:**
+```bash
+$ kubectl get rs -n my-nginx-namespace
+NAME                            DESIRED   CURRENT   READY   AGE
+my-nginx-deployment-9cbcd46b4   3         3         3       21h
+```
+
+Why isn't the ReplicaSet scaling? Because the Deployment manages the ReplicaSet. We need to scale the Deployment, not the ReplicaSet.
+
+
+```bash
+kubectl scale --replicas=10 deployment my-nginx-deployment -n my-nginx-namespace
+```
+
+**Sample Output:**
+```bash
+$ kubectl scale --replicas=10 deployment my-nginx-deployment -n my-nginx-namespace
+
+deployment.apps/my-nginx-deployment scaled
+```
+
+```bash
+kubectl get all -n my-nginx-namespace
+```
+
+**Sample Output:**
+```bash
+$ kubectl get all -n my-nginx-namespace
+
+NAME                                      READY   STATUS    RESTARTS   AGE
+pod/my-nginx-deployment-9cbcd46b4-42n2q   1/1     Running   0          21h
+pod/my-nginx-deployment-9cbcd46b4-4hwxb   1/1     Running   0          5m22s
+pod/my-nginx-deployment-9cbcd46b4-7fdwm   1/1     Running   0          29s
+pod/my-nginx-deployment-9cbcd46b4-8hczb   1/1     Running   0          29s
+pod/my-nginx-deployment-9cbcd46b4-dv572   1/1     Running   0          29s
+pod/my-nginx-deployment-9cbcd46b4-lgvk7   1/1     Running   0          29s
+pod/my-nginx-deployment-9cbcd46b4-nq7xw   1/1     Running   0          29s
+pod/my-nginx-deployment-9cbcd46b4-smcv6   1/1     Running   0          29s
+pod/my-nginx-deployment-9cbcd46b4-v9d9w   1/1     Running   0          29s
+pod/my-nginx-deployment-9cbcd46b4-xt89j   1/1     Running   0          21h
+
+NAME                       TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)    AGE
+service/my-nginx-service   ClusterIP   10.111.212.138   <none>        8888/TCP   36m
+
+NAME                                  READY   UP-TO-DATE   AVAILABLE   AGE
+deployment.apps/my-nginx-deployment   10/10   10           10          21h
+
+NAME                                            DESIRED   CURRENT   READY   AGE
+replicaset.apps/my-nginx-deployment-9cbcd46b4   10        10        10      21h
+```
+
+```bash
+kubectl apply -f my-nginx.deployment.yaml
+```
+
+**Sample Output:**
+```bash
+$ kubectl apply -f my-nginx-deployment.yaml
+
+deployment.apps/my-nginx-deployment configured
+```
+
+```bash
+kubectl get all -n my-nginx-namespace
+```
+
+**Sample Output:**
+```bash
+$ kubectl get all -n my-nginx-namespace
+
+NAME                                      READY   STATUS        RESTARTS   AGE
+pod/my-nginx-deployment-9cbcd46b4-42n2q   1/1     Running       0          21h
+pod/my-nginx-deployment-9cbcd46b4-dv572   0/1     Terminating   0          117s
+pod/my-nginx-deployment-9cbcd46b4-nq7xw   1/1     Running       0          117s
+pod/my-nginx-deployment-9cbcd46b4-smcv6   1/1     Running       0          117s
+
+NAME                       TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)    AGE
+service/my-nginx-service   ClusterIP   10.111.212.138   <none>        8888/TCP   38m
+
+NAME                                  READY   UP-TO-DATE   AVAILABLE   AGE
+deployment.apps/my-nginx-deployment   3/3     3            3           21h
+
+NAME                                            DESIRED   CURRENT   READY   AGE
+replicaset.apps/my-nginx-deployment-9cbcd46b4   3         3         3       21h
+```
+
+```bash
+grep -i replica my-nginx-deployment.yaml
+```
+
+**Sample Output:**
+```bash
+$ grep -i replica my-nginx-deployment.yaml
+
+  replicas: 3
+```
+
+
+```bash
+sed -i 's/replicas\:\ 3/replicas\:\ 10/g' my-nginx-deployment.yaml
+```
+
+```bash
+grep -i replica my-nginx-deployment.yaml
+```
+
+**Sample Output:**
+```bash
+$ grep -i replica my-nginx-deployment.yaml
+
+  replicas: 10
+```
+
+
+```bash
+kubectl apply -f my-nginx-deployment.yaml
+```
+
+**Sample Output:**
+```bash
+$ kubectl apply -f my-nginx-deployment.yaml
+
+deployment.apps/my-nginx-deployment configured
+```
+
+```bash
+kubectl get all -n my-nginx-namespace
+```
+
+**Sample Output:**
+```bash
+$ kubectl get all -n my-nginx-namespace
+
+NAME                                      READY   STATUS    RESTARTS   AGE
+pod/my-nginx-deployment-9cbcd46b4-42n2q   1/1     Running   0          21h
+pod/my-nginx-deployment-9cbcd46b4-6hlwl   1/1     Running   0          23s
+pod/my-nginx-deployment-9cbcd46b4-7t2fr   1/1     Running   0          23s
+pod/my-nginx-deployment-9cbcd46b4-bls2n   1/1     Running   0          23s
+pod/my-nginx-deployment-9cbcd46b4-f4lkn   1/1     Running   0          23s
+pod/my-nginx-deployment-9cbcd46b4-mxxbl   1/1     Running   0          23s
+pod/my-nginx-deployment-9cbcd46b4-nq7xw   1/1     Running   0          8m8s
+pod/my-nginx-deployment-9cbcd46b4-smcv6   1/1     Running   0          8m8s
+pod/my-nginx-deployment-9cbcd46b4-sz27h   1/1     Running   0          23s
+pod/my-nginx-deployment-9cbcd46b4-v8bp5   1/1     Running   0          23s
+
+NAME                       TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)    AGE
+service/my-nginx-service   ClusterIP   10.111.212.138   <none>        8888/TCP   44m
+
+NAME                                  READY   UP-TO-DATE   AVAILABLE   AGE
+deployment.apps/my-nginx-deployment   10/10   10           10          21h
+
+NAME                                            DESIRED   CURRENT   READY   AGE
+replicaset.apps/my-nginx-deployment-9cbcd46b4   10        10        10      21h
+```
+
+Checking the `my-nginx-service`, using `curl`:
+```bash
+curl http://10.111.212.138:8888
+```
+
+**Sample Output:**
+```bash
+$ curl http://10.111.212.138:8888
+
+<!DOCTYPE html>
+<html>
+<head>
+<title>Welcome to nginx!</title>
+<style>
+html { color-scheme: light dark; }
+body { width: 35em; margin: 0 auto;
+font-family: Tahoma, Verdana, Arial, sans-serif; }
+</style>
+</head>
+<body>
+<h1>Welcome to nginx!</h1>
+<p>If you see this page, the nginx web server is successfully installed and
+working. Further configuration is required.</p>
+
+<p>For online documentation and support please refer to
+<a href="http://nginx.org/">nginx.org</a>.<br/>
+Commercial support is available at
+<a href="http://nginx.com/">nginx.com</a>.</p>
+
+<p><em>Thank you for using nginx.</em></p>
+</body>
+</html>
 ```
 
 
