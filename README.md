@@ -9,9 +9,9 @@ Using the `kubectl` command imperatively to create Kubernetes manifests for decl
 
 **What makes this skill so important?**
 
-- Fast: *Seconds count.* Let `kubectl` do the work.
-- Accurate: *No typos. No formatting errors.* Works out of the box.
-- Easy: Less reliant on finding an example in the docs, then copying it.
+- Fast: *Seconds count.* Less reliant on finding an example in the docs, then copying it.
+- Accurate: *No typos. No formatting errors.* Manifest works the first time.
+- Easy: Let `kubectl` do the heavy lifting.
 
 [Adrien Trouillaud](https://www.linkedin.com/in/trouillaud/) wrote an excellent Medium article, [Imperative vs. Declarative — a Kubernetes Tutorial](https://medium.com/payscale-tech/imperative-vs-declarative-a-kubernetes-tutorial-4be66c5d8914) which I discovered while researching this topic. Adrien's article, a comprehensive tutorial on how to leverage the imperative approach to creating objects in Kubernetes, clarified the topic for me. The article dates back to early 2019, so some of the syntax has changed, but the concepts in the article still ring true. I learned even more by digging into the commands and updating the syntax, where needed. *I would highly recommend giving it a read.*
 
@@ -42,7 +42,6 @@ In this tutorial, we're going to get *hands-on* with using the `kubectl` command
 []()
 
 []()
-
 
 ## Prerequisites
 
@@ -750,7 +749,7 @@ What if you want to use `kubectl` imperatively, but want to generate a declarati
 
 You created your `imperative` namespace to hold the objects you want to create *imperatively*, using `kubectl`. Now, you're going to start creating objects *declarively*, so you're going to put those into the `declarative` namespace.
 
-Creating a namespace provides a great example of how we can leverage the imperative to create the declarative. You can use the imperative command `kubectl create namespace declarative` with the `--dry-run=client` and `--output=yaml` swiches, and redirect the output into a file.
+Creating a namespace provides a great example of how you can leverage the imperative to create the declarative. You can use the imperative command `kubectl create namespace declarative` with the `--dry-run=client` and `--output=yaml` swiches, and redirect the output into a file.
 
 Create the `declarative` namespace:
 ```bash
