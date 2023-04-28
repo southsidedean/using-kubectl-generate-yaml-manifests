@@ -2244,117 +2244,168 @@ Again, labels and Selectors play an important role in Kubernetes, so be sure to 
 
 
 ```bash
-kubectl 
+kubectl logs --help
 ```
 
 **Sample Output:**
 ```bash
+$ kubectl logs --help
 
+Print the logs for a container in a pod or specified resource. If the pod has only one container, the container name is
+optional.
+
+Examples:
+  # Return snapshot logs from pod nginx with only one container
+  kubectl logs nginx
+
+  # Return snapshot logs from pod nginx with multi containers
+  kubectl logs nginx --all-containers=true
+
+  # Return snapshot logs from all containers in pods defined by label app=nginx
+  kubectl logs -l app=nginx --all-containers=true
+
+  # Return snapshot of previous terminated ruby container logs from pod web-1
+  kubectl logs -p -c ruby web-1
+
+  # Begin streaming the logs of the ruby container in pod web-1
+  kubectl logs -f -c ruby web-1
+
+  # Begin streaming the logs from all containers in pods defined by label app=nginx
+  kubectl logs -f -l app=nginx --all-containers=true
+
+  # Display only the most recent 20 lines of output in pod nginx
+  kubectl logs --tail=20 nginx
+
+  # Show all logs from pod nginx written in the last hour
+  kubectl logs --since=1h nginx
+
+  # Show logs from a kubelet with an expired serving certificate
+  kubectl logs --insecure-skip-tls-verify-backend nginx
+
+  # Return snapshot logs from first container of a job named hello
+  kubectl logs job/hello
+
+  # Return snapshot logs from container nginx-1 of a deployment named nginx
+  kubectl logs deployment/nginx -c nginx-1
+
+Options:
+    --all-containers=false:
+	Get all containers' logs in the pod(s).
+
+    -c, --container='':
+	Print the logs of this container
+
+    -f, --follow=false:
+	Specify if the logs should be streamed.
+
+    --ignore-errors=false:
+	If watching / following pod logs, allow for any errors that occur to be non-fatal
+
+    --insecure-skip-tls-verify-backend=false:
+	Skip verifying the identity of the kubelet that logs are requested from.  In theory, an attacker could provide
+	invalid log content back. You might want to use this if your kubelet serving certificates have expired.
+
+    --limit-bytes=0:
+	Maximum bytes of logs to return. Defaults to no limit.
+
+    --max-log-requests=5:
+	Specify maximum number of concurrent logs to follow when using by a selector. Defaults to 5.
+
+    --pod-running-timeout=20s:
+	The length of time (like 5s, 2m, or 3h, higher than zero) to wait until at least one pod is running
+
+    --prefix=false:
+	Prefix each log line with the log source (pod name and container name)
+
+    -p, --previous=false:
+	If true, print the logs for the previous instance of the container in a pod if it exists.
+
+    -l, --selector='':
+	Selector (label query) to filter on, supports '=', '==', and '!='.(e.g. -l key1=value1,key2=value2). Matching
+	objects must satisfy all of the specified label constraints.
+
+    --since=0s:
+	Only return logs newer than a relative duration like 5s, 2m, or 3h. Defaults to all logs. Only one of
+	since-time / since may be used.
+
+    --since-time='':
+	Only return logs after a specific date (RFC3339). Defaults to all logs. Only one of since-time / since may be
+	used.
+
+    --tail=-1:
+	Lines of recent log file to display. Defaults to -1 with no selector, showing all log lines otherwise 10, if a
+	selector is provided.
+
+    --timestamps=false:
+	Include timestamps on each line in the log output
+
+Usage:
+  kubectl logs [-f] [-p] (POD | TYPE/NAME) [-c CONTAINER] [options]
+
+Use "kubectl options" for a list of global command-line options (applies to all commands).
 ```
 
 ```bash
-kubectl 
+kubectl logs my-nginx-deployment-9cbcd46b4-42n2q -n my-nginx-namespace
+```
+
+```bash
+kubectl get pods -n my-nginx-namespace
 ```
 
 **Sample Output:**
 ```bash
-
+$ kubectl get pods -n my-nginx-namespace
+NAME                                  READY   STATUS    RESTARTS   AGE
+my-nginx-deployment-9cbcd46b4-42n2q   1/1     Running   0          24h
+my-nginx-deployment-9cbcd46b4-6hlwl   1/1     Running   0          156m
+my-nginx-deployment-9cbcd46b4-7t2fr   1/1     Running   0          156m
+my-nginx-deployment-9cbcd46b4-bls2n   1/1     Running   0          156m
+my-nginx-deployment-9cbcd46b4-f4lkn   1/1     Running   0          156m
+my-nginx-deployment-9cbcd46b4-mxxbl   1/1     Running   0          156m
+my-nginx-deployment-9cbcd46b4-nq7xw   1/1     Running   0          164m
+my-nginx-deployment-9cbcd46b4-smcv6   1/1     Running   0          164m
+my-nginx-deployment-9cbcd46b4-sz27h   1/1     Running   0          156m
+my-nginx-deployment-9cbcd46b4-v8bp5   1/1     Running   0          156m
 ```
 
 ```bash
-kubectl 
+kubectl logs my-nginx-deployment-9cbcd46b4-42n2q -n my-nginx-namespace
 ```
 
 **Sample Output:**
 ```bash
+$ kubectl logs my-nginx-deployment-9cbcd46b4-42n2q -n my-nginx-namespace
 
+/docker-entrypoint.sh: /docker-entrypoint.d/ is not empty, will attempt to perform configuration
+/docker-entrypoint.sh: Looking for shell scripts in /docker-entrypoint.d/
+/docker-entrypoint.sh: Launching /docker-entrypoint.d/10-listen-on-ipv6-by-default.sh
+10-listen-on-ipv6-by-default.sh: info: Getting the checksum of /etc/nginx/conf.d/default.conf
+10-listen-on-ipv6-by-default.sh: info: Enabled listen on IPv6 in /etc/nginx/conf.d/default.conf
+/docker-entrypoint.sh: Launching /docker-entrypoint.d/20-envsubst-on-templates.sh
+/docker-entrypoint.sh: Launching /docker-entrypoint.d/30-tune-worker-processes.sh
+/docker-entrypoint.sh: Configuration complete; ready for start up
+2023/04/27 19:19:20 [notice] 1#1: using the "epoll" event method
+2023/04/27 19:19:20 [notice] 1#1: nginx/1.23.4
+2023/04/27 19:19:20 [notice] 1#1: built by gcc 10.2.1 20210110 (Debian 10.2.1-6) 
+2023/04/27 19:19:20 [notice] 1#1: OS: Linux 5.15.0-69-generic
+2023/04/27 19:19:20 [notice] 1#1: getrlimit(RLIMIT_NOFILE): 1048576:1048576
+2023/04/27 19:19:20 [notice] 1#1: start worker processes
+2023/04/27 19:19:20 [notice] 1#1: start worker process 29
+2023/04/27 19:19:20 [notice] 1#1: start worker process 30
+10.0.1.132 - - [27/Apr/2023:19:25:37 +0000] "GET / HTTP/1.1" 200 615 "-" "curl/7.81.0" "-"
+10.0.1.132 - - [28/Apr/2023:16:01:12 +0000] "GET / HTTP/1.1" 200 615 "-" "curl/7.81.0" "-"
 ```
 
 ```bash
-kubectl 
+kubectl logs -f -l app=my-nginx-deployment --all-containers=true -n my-nginx-namespace --max-log-requests 10
 ```
 
-**Sample Output:**
-```bash
-
-```
-
-```bash
-kubectl 
-```
-
-**Sample Output:**
-```bash
-
-```
-
-```bash
-kubectl 
-```
-
-**Sample Output:**
-```bash
-
-```
-
-```bash
-kubectl 
-```
-
-**Sample Output:**
-```bash
-
-```
-
-```bash
-kubectl 
-```
-
-**Sample Output:**
-```bash
-
-```
-
-```bash
-kubectl 
-```
-
-**Sample Output:**
-```bash
-
-```
-
-```bash
-kubectl 
-```
-
-**Sample Output:**
-```bash
-
-```
-
-```bash
-kubectl 
-```
-
-**Sample Output:**
-```bash
-
-```
-
-```bash
-kubectl 
-```
-
-**Sample Output:**
-```bash
-
-```
 
 
 ***Transition***
 
-## Exporting Running Kubernetes Objects to a Manifest Using `kubectl get`
+## Exporting Running Kubernetes Objects to a Manifest Using the `kubectl get` Command
 
 
 
@@ -2481,22 +2532,6 @@ kubectl
 
 ```
 
-
-***Transition***
-
-## Deleting Kubernetes Objects Using `kubectl`
-
-
-
-```bash
-kubectl 
-```
-
-**Sample Output:**
-```bash
-
-```
-
 ```bash
 kubectl 
 ```
@@ -2519,12 +2554,12 @@ kubectl
 
 ***Transition***
 
-## Section
+## Deleting Kubernetes Objects Using `kubectl`
 
 
 
 ```bash
-kubectl 
+kubectl get all -A
 ```
 
 **Sample Output:**
@@ -2533,21 +2568,25 @@ kubectl
 ```
 
 ```bash
-kubectl 
+kubectl delete pod/nginx-pod -n imperative
 ```
 
 **Sample Output:**
 ```bash
+$ kubectl delete pod/nginx-pod -n imperative
 
+pod "nginx-pod" deleted
 ```
 
 ```bash
-kubectl 
+kubectl delete ns/imperative
 ```
 
 **Sample Output:**
 ```bash
+$ kubectl delete ns/imperative
 
+namespace "imperative" deleted
 ```
 
 
@@ -2560,7 +2599,9 @@ kubectl
 
 ### Exercise 1
 
-***Create a *single* pod, imperatively, named ``, using the image ``, in the `` namespace, with `port ` exposed.***
+
+
+***Create a *single* pod, imperatively, named `X`, using the image `X`, in the `X` namespace, with `port X` exposed.***
 
 [Exercise 1: Solution](solutions/solution-exercise-1.md)
 
