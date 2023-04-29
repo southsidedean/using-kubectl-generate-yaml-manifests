@@ -2733,7 +2733,7 @@ kube-system   replicaset.apps/coredns-787d4945fb                  2         2   
 
 ## Practice Exercises
 
-Use the following practice exercises to test the skills you learned in this tutorial. Try and solve the exercises on your own before checking the solutions.
+Use the following **practice exercises** to test the skills you learned in this tutorial. Try and solve the exercises on your own before checking the solutions.
 
 ### Exercise 1
 
@@ -2755,7 +2755,7 @@ Use the following practice exercises to test the skills you learned in this tuto
 
 ### Exercise 4
 
-***Create a YAML manifest for a Deployment, named `my-nginx-deployment`, using the `nginx-latest` container image, in the `my-nginx-namespace` namespace, with 3 replicas, exposing port 80, in a file named `my-nginx-deployment.yaml`. Review this manifest, deploy it, and confirm all the objects have been created.***
+***Create a YAML manifest for a Deployment, named `my-nginx-deployment`, using the `nginx-latest` container image, in the `my-nginx-namespace` namespace, with 5 replicas, exposing port 80, in a file named `my-nginx-deployment.yaml`. Review this manifest, deploy it, and confirm all the objects have been created.***
 
 [Exercise 4: Solution](solutions/solution-exercise-4.md)
 
@@ -2767,9 +2767,33 @@ Use the following practice exercises to test the skills you learned in this tuto
 
 ### Exercise 6
 
-
+***Scale the deployment***
 
 [Exercise 6: Solution](solutions/solution-exercise-6.md)
+
+### Exercise 7
+
+***In Namespace project-tiger create a Pod named tigers-reunite of image httpd:2.4.41-alpine with labels pod=container and container=pod.***
+
+[Exercise 7: Solution](solutions/solution-exercise-7.md)
+
+### Exercise 8
+
+
+
+[Exercise 8: Solution](solutions/solution-exercise-8.md)
+
+### Exercise 9
+
+
+
+[Exercise 9: Solution](solutions/solution-exercise-9.md)
+
+### Exercise 10
+
+***Clean up everything you created. Verify your work.***
+
+[Exercise 10: Solution](solutions/solution-exercise-10.md)
 
 ***Transition***
 
