@@ -2761,7 +2761,7 @@ Use the following **practice exercises** to test the skills you learned in this 
 
 ### Exercise 5
 
-
+***Create a service***
 
 [Exercise 5: Solution](solutions/solution-exercise-5.md)
 
@@ -2773,7 +2773,7 @@ Use the following **practice exercises** to test the skills you learned in this 
 
 ### Exercise 7
 
-***In Namespace project-tiger create a Pod named tigers-reunite of image httpd:2.4.41-alpine with labels pod=container and container=pod.***
+***Create a Pod named `nginx-pod`, using image `nginx:latest`, in the `nginx-test` namespace, with labels nginx=test and test=nginx. Verify the Pod's creation and that it has the correct labels applied.***
 
 [Exercise 7: Solution](solutions/solution-exercise-7.md)
 
