@@ -2733,7 +2733,7 @@ kube-system   replicaset.apps/coredns-787d4945fb                  2         2   
 
 ## Practice Exercises
 
-Use the following **practice exercises** to test the skills you learned in this tutorial. Try and solve the exercises on your own before checking the solutions.
+Use the following **practice exercises** to test the skills you learned in this tutorial. *Try and solve the exercises on your own before checking the solutions.*
 
 ### Exercise 1
 
@@ -2773,19 +2773,19 @@ Use the following **practice exercises** to test the skills you learned in this 
 
 ### Exercise 7
 
-***Create a Pod named `nginx-pod`, using image `nginx:latest`, in the `nginx-test` namespace, with labels nginx=test and test=nginx. Verify the Pod's creation and that it has the correct labels applied.***
+***Create a manifest for a Pod named `nginx-pod`, using image `nginx:latest`, in the `nginx-test` namespace, with labels nginx=test and test=nginx. Review this manifest, deploy it, and confirm all the objects have been properly created with the correct labels applied.***
 
 [Exercise 7: Solution](solutions/solution-exercise-7.md)
 
 ### Exercise 8
 
-
+***Another exercise***
 
 [Exercise 8: Solution](solutions/solution-exercise-8.md)
 
 ### Exercise 9
 
-
+***Another exercise***
 
 [Exercise 9: Solution](solutions/solution-exercise-9.md)
 
