@@ -2773,7 +2773,7 @@ Use the following **practice exercises** to test the skills you learned in this 
 
 ### Exercise 7
 
-***Create a manifest for a Pod named `nginx-pod`, using image `nginx:latest`, in the `nginx-test` namespace, with labels nginx=test and test=nginx. Review this manifest, deploy it, and confirm all the objects have been properly created with the correct labels applied.***
+***Create a manifest for a Pod named `nginx-pod`, using image `nginx:latest`, in the `nginx-test` namespace, with labels `nginx=test` and `test=nginx`, in a file named `test-nginx-pod.yaml`. Review this manifest, deploy it, and confirm all the objects have been properly created with the correct labels applied.***
 
 [Exercise 7: Solution](solutions/solution-exercise-7.md)
 
