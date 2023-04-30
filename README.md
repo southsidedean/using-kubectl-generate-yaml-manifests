@@ -2743,7 +2743,7 @@ Use the following **practice exercises** to test the skills you learned in this 
 
 ### Exercise 2
 
-***Create a YAML manifest for a single Pod, imperatively, named `apache-pod`, using the image `httpd:latest`, in the `apache-declarative` namespace, with `port 80` exposed. Review this manifest, deploy it, and confirm all the objects have been created. Confirm that your Pod is in the `Running` state. Confirm you can reach the Apache web server using `curl`.***
+***Create a YAML manifest in a file named `declarative-apache-pod.yaml` for a single Pod, imperatively, named `apache-pod`, using the image `httpd:latest`, in the `apache-declarative` namespace, with `port 80` exposed. Review this manifest, deploy it, and confirm all the objects have been created. Confirm your Pod is in the `Running` state. Confirm you can reach the Apache web server using `curl`.***
 
 [Exercise 2: Solution](solutions/solution-exercise-2.md)
 
