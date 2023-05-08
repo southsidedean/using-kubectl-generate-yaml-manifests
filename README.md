@@ -1185,7 +1185,9 @@ Commercial support is available at
 
 The NGINX web servers in our `my-nginx-deployment` Pods respond with the default web page. Everything appears to be working as expected with our `my-nginx-deployment` deployment.
 
-***Transition***
+Wouldn't it be nice if you didn't have to access the NGINX server pods by a bunch of individual IP addresses?  You can, adding a Service to direct traffic to your Pods!
+
+***Let's see how you can create a manifest for a Service, imperatively!***
 
 ## Creating a Service Manifest Using the `kubectl create service` and `kubectl set selector` Commands
 
@@ -1197,7 +1199,9 @@ The NGINX web servers in our `my-nginx-deployment` Pods respond with the default
 
 
 
+The Pods have been labeled with the `app=my-nginx-deployment` label, so you can use that as a Selector for your Service.
 
+List all Services:
 ```bash
 kubectl get service -A
 ```
@@ -1211,6 +1215,9 @@ default       kubernetes   ClusterIP   10.96.0.1    <none>        443/TCP       
 kube-system   kube-dns     ClusterIP   10.96.0.10   <none>        53/UDP,53/TCP,9153/TCP   7d4h
 ```
 
+
+
+Take a look at the help information for the `kubectl create service` command:
 ```bash
 kubectl create service --help
 ```
@@ -1238,8 +1245,20 @@ Use "kubectl options" for a list of global command-line options (applies to all
 commands).
 ```
 
+Say you've also been presented with the following request, for a new Service:
 
+***Create a YAML manifest for a Service, named `my-nginx-service`, of type `clusterip`, in the `my-nginx-namespace` namespace, exposed on port 8888, in a file named `my-nginx-service.yaml`.  Use the `app=my-nginx-deployment` label as a Selector for your Service.***
 
+**This request has two parts:**
+
+- Create the Service
+- Add a Selector
+
+You can do this by using an *imperative* `kubectl create service clusterip` command to create the Service, then *pipe* the output of that command (the YAML Service manifest) into the `kubectl set selector` command to add the `app=my-nginx-deployment` selector to the manifest, then redirect that output to a file named `my-nginx-service.yaml`.
+
+Let's take a look at those commands.
+
+Help information on the `kubectl create service clusterip` command:
 ```bash
 kubectl create service clusterip --help
 ```
@@ -1304,8 +1323,7 @@ Usage:
 Use "kubectl options" for a list of global command-line options (applies to all commands).
 ```
 
-
-
+Help information on the `kubectl set selector` command:
 ```bash
 kubectl set selector --help
 ```
@@ -1374,11 +1392,14 @@ Usage:
 Use "kubectl options" for a list of global command-line options (applies to all commands).
 ```
 
+**Give it a try!**
 
+Create the Service manifest and add the Selector:
 ```bash
 kubectl create service clusterip my-nginx-service --tcp=8888:80 --namespace my-nginx-namespace --dry-run=client --output=yaml | kubectl set selector --local -f - 'app=my-nginx-deployment' --output=yaml > my-nginx-service.yaml
 ```
 
+Checking your work:
 ```bash
 cat my-nginx-service.yaml
 ```
@@ -1457,6 +1478,8 @@ NAME                                            DESIRED   CURRENT   READY   AGE
 replicaset.apps/my-nginx-deployment-9cbcd46b4   3         3         3       20h
 ```
 
+
+Test using `curl`, via the Service IP address and port:
 ```bash
 curl http://10.111.212.138:8888
 ```
