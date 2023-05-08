@@ -1,5 +1,5 @@
 # Using `kubectl` to Generate YAML Manifests
-**Tom Dean - 4/28/2023**
+**Tom Dean - 5/8/2023**
 
 ## Introduction
 
@@ -15,7 +15,7 @@ Using the `kubectl` command imperatively to create Kubernetes manifests for decl
 
 [Adrien Trouillaud](https://www.linkedin.com/in/trouillaud/) wrote an excellent Medium article, [Imperative vs. Declarative — a Kubernetes Tutorial](https://medium.com/payscale-tech/imperative-vs-declarative-a-kubernetes-tutorial-4be66c5d8914), which I discovered while researching this topic. Adrien's article, a comprehensive tutorial on how to leverage the imperative approach to creating objects in Kubernetes, clarified the topic for me. The article dates back to early 2019, so some of the syntax has changed, but the concepts in the article still ring true. I learned even more by digging into the commands and updating the syntax, where needed. *I would highly recommend giving it a read.*
 
-In this tutorial, you're not only going to learn about the `kubectl` command, you're going to get *hands-on* with using the `kubectl` command *imperatively* to create some common objects, as well as some *declarative* YAML manifests.
+In this tutorial, you're not only going to learn about the `kubectl` command, you're going to get *hands-on* with using the `kubectl` command *imperatively* to create some common objects, as well as some *declarative* YAML manifests.  You will also practice some common `kubectl` commands used to manage and deploy these manifests.
 
 ***Let's dig in!***
 
@@ -76,9 +76,7 @@ CoreDNS is running at https://10.0.1.132:6443/api/v1/namespaces/kube-system/serv
 To further debug and diagnose cluster problems, use 'kubectl cluster-info dump'.
 ```
 
-You can use the `kubectl get` command to take a look at objects in your cluster.
-
-Take a look at your Kubernetes nodes.
+You can use the `kubectl get` command to take a look at objects in your cluster.  Take a look at your Kubernetes nodes.
 
 List of nodes, with detail:
 ```bash
@@ -93,6 +91,8 @@ NAME               STATUS   ROLES           AGE     VERSION   INTERNAL-IP   EXTE
 control-plane-01   Ready    control-plane   6d22h   v1.26.1   10.0.1.132    <none>        Ubuntu 22.04.2 LTS   5.15.0-69-generic   containerd://1.6.20
 worker-node-01     Ready    <none>          6d22h   v1.26.1   10.0.1.204    <none>        Ubuntu 22.04.2 LTS   5.15.0-69-generic   containerd://1.6.20
 ```
+
+The Kubernetes cluster in the previous example consists of two nodes, one Control Plane node and one Worker node.
 
 Take a look at *all the objects* on your cluster.
 
@@ -135,6 +135,8 @@ kube-system   replicaset.apps/calico-kube-controllers-57b57c56f   1         1   
 kube-system   replicaset.apps/coredns-787d4945fb                  2         2         2       6d22h
 ```
 
+The previous example represents the resources on a basic Kubernetes cluster.
+
 List all namespaces:
 ```bash
 kubectl get ns
@@ -149,6 +151,8 @@ kube-node-lease   Active   6d22h
 kube-public       Active   6d22h
 kube-system       Active   6d22h
 ```
+
+This cluster has four namespaces.
 
 ***With a working cluster at your disposal, you're ready to proceed.***
 
@@ -243,7 +247,7 @@ Use "kubectl <command> --help" for more information about a given command.
 Use "kubectl options" for a list of global command-line options (applies to all commands).
 ```
 
-The `kubectl --help` command provides you with a great high-level view of all the commands available to `kubectl`. You can dig down further by adding the command.
+The `kubectl --help` command provides you with a great high-level view of all the commands available to `kubectl`. You can dig down further by adding the command, such as `kubectl run --help`.
 
 Drilling down, into the `kubectl run` command:
 ```bash
@@ -259,29 +263,29 @@ Create and run a particular image in a pod.
 Examples:
   # Start a nginx pod
   kubectl run nginx --image=nginx
-  
+
   # Start a hazelcast pod and let the container expose port 5701
   kubectl run hazelcast --image=hazelcast/hazelcast --port=5701
-  
+
   # Start a hazelcast pod and set environment variables "DNS_DOMAIN=cluster" and "POD_NAMESPACE=default" in the
 container
   kubectl run hazelcast --image=hazelcast/hazelcast --env="DNS_DOMAIN=cluster" --env="POD_NAMESPACE=default"
-  
+
   # Start a hazelcast pod and set labels "app=hazelcast" and "env=prod" in the container
   kubectl run hazelcast --image=hazelcast/hazelcast --labels="app=hazelcast,env=prod"
-  
+
   # Dry run; print the corresponding API objects without creating them
   kubectl run nginx --image=nginx --dry-run=client
-  
+
   # Start a nginx pod, but overload the spec with a partial set of values parsed from JSON
   kubectl run nginx --image=nginx --overrides='{ "apiVersion": "v1", "spec": { ... } }'
-  
+
   # Start a busybox pod and keep it in the foreground, don't restart it if it exits
   kubectl run -i -t busybox --image=busybox --restart=Never
-  
+
   # Start the nginx pod using the default command, but use custom arguments (arg1 .. argN) for that command
   kubectl run nginx --image=nginx -- <arg1> <arg2> ... <argN>
-  
+
   # Start the nginx pod using a different command and custom arguments
   kubectl run nginx --image=nginx --command -- <cmd> <arg1> ... <argN>
 
@@ -383,9 +387,9 @@ Usage:
 Use "kubectl options" for a list of global command-line options (applies to all commands).
 ```
 
-This view gives you a high-level explanation of the command, usage examples and the syntax and switches for the command.
+This view gives you a high-level explanation of the `kubectl run` command, including usage examples and the syntax and switches.
 
-Go ahead, play around, get familiar with the help functionality in the `kubectl` command. It's the fastest documentation for `kubectl`, both when taking the exams and for day-to-day use.
+***Go ahead, play around, get familiar with the help functionality in the `kubectl` command. It's the fastest documentation for `kubectl`, both when taking the exams and for day-to-day use.***
 
 ### Kubernetes API Resources
 
@@ -548,7 +552,7 @@ kube-system   coredns                   2/2     2            2           6d23h
 
 You can see that the previous example shows two `deployments` in the the `kube-system` namespace.
 
-Sometimes you want to see more than one API resource. You can do that, by separating the resources with commas, as shown in the following example.
+Sometimes you want to see *more than one* API resource. You can do that, by separating the resources with commas, as shown in the following example.
 
 List all `deployments`, `replicasets` and `pods`, in all namespaces:
 ```bash
@@ -583,7 +587,7 @@ kube-system   pod/kube-scheduler-control-plane-01            1/1     Running   0
 
 The previous example shows how you can neatly check on multiple API resource types in a single command.
 
-Take some time, explore the `kubectl` command, the built-in help documentation, API resources and how to use the `kubectl explain` command as a resource.
+*Take some time, explore the `kubectl` command, the built-in help documentation, API resources and how to use the `kubectl explain` command as a resource.*
 
 **AGAIN:**
 
@@ -606,7 +610,7 @@ Create the `nginx-pod` imperatively:
 kubectl run nginx-pod --image nginx:latest --namespace imperative --port=80
 ```
 
-You will get the message `Error from server (NotFound): namespaces "imperative" not found`. You need to create the namespace. This can also be done imperatively using `kubectl create`.
+You will get the message `Error from server (NotFound): namespaces "imperative" not found`. You need to create the `imperative` namespace. This can also be done *imperatively* using `kubectl create`.
 
 Create the `imperative` namespace imperatively:
 ```bash
@@ -635,7 +639,7 @@ NAME        READY   STATUS    RESTARTS   AGE   IP                NODE           
 nginx-pod   1/1     Running   0          10s   192.168.126.201   worker-node-01   <none>           <none>
 ```
 
-You can dig deeper and get more information using the `kubectl describe` command.
+You can dig deeper and get more information on the Pod using the `kubectl describe` command.
 
 More information on our pod:
 ```bash
@@ -703,9 +707,9 @@ Events:
 
 Using `kubectl describe` provides you with a thorough description of the Pod.
 
-Kubernetes says the status of our `nginx-pod` pod is good. Let's look at it from another angle. Use the `curl` command to test the NGINX server in your pod.
+Kubernetes reports a good status for our `nginx-pod` Pod. Let's look at it from another angle. Use the `curl` command to test the NGINX server in your Pod.
 
-Test using `curl`, replace with your pod's IP address:
+Test using `curl`, replace with your Pod's IP address:
 ```bash
 curl http://<POD_IP>
 ```
@@ -747,11 +751,11 @@ What if you want to use `kubectl` imperatively, but want to generate a declarati
 
 ## Generating a Namespace Manifest Using the `kubectl create namespace` Command
 
-You created your `imperative` namespace to hold the objects you want to create *imperatively*, using `kubectl`. Now, you're going to start creating objects *declarively*, so you're going to put those into the `declarative` namespace.
+You created your `imperative` Namespace to hold the objects you want to create *imperatively*, using `kubectl`. Now, you're going to start creating objects *declarively*, and you're going to put those into the `declarative` Namespace.
 
-Creating a namespace provides a great example of how you can leverage the imperative to create the declarative. You can use the imperative command `kubectl create namespace declarative` with the `--dry-run=client` and `--output=yaml` swiches, and redirect the output into a file.
+Creating a Namespace provides a great example of how you can leverage the *imperative* to create the *declarative*. You can use the *imperative* command `kubectl create namespace declarative` with the `--dry-run=client` and `--output=yaml` swiches, and redirect the output into a file.
 
-Create the `declarative` namespace:
+Create the `declarative` Namespace:
 ```bash
 kubectl create namespace declarative --dry-run=client --output=yaml > declarative-ns.yaml
 ```
@@ -774,7 +778,9 @@ spec: {}
 status: {}
 ```
 
-Now, let's use the YAML manifest to create our namespace:
+You will get a file named `declarative-ns.yaml` with the manifest for the `declarative` Namespace.
+
+Now, let's use the `declarative-ns.yaml` manifest to create our Namespace:
 ```bash
 kubectl create -f declarative-ns.yaml
 ```
@@ -804,13 +810,19 @@ kube-public       Active   7d3h
 kube-system       Active   7d3h
 ```
 
+You've created the `declarative` Namespace, *declaratively*!
 
-
-***Transition***
+***Let's try it with a Pod.***
 
 ## Generating a Pod Manifest Using the `kubectl run` Command
 
+[Kubernetes: Managing Kubernetes Objects Using Imperative Commands](https://kubernetes.io/docs/tasks/manage-kubernetes-objects/imperative-command/)
 
+Say you've been presented with the following request:
+
+***"Create a manifest for a single Pod, named `nginx-pod`, using the image `nginx:latest`, in the `declarative` namespace, with `port 80` exposed."***
+
+You can use the *imperative* command `kubectl run nginx-pod` with the `--dry-run=client` and `--output=yaml` swiches, and redirect the output into a file, like you did when you created the `declarative` Namespace.
 
 ```bash
 kubectl run nginx-pod --image nginx:latest --namespace declarative --port=80 --dry-run=client --output=yaml > nginx-pod.yaml
