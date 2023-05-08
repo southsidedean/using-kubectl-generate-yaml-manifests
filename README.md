@@ -626,7 +626,7 @@ kubectl run nginx-pod --image nginx:latest --namespace imperative --port=80
 
 You should get `pod/nginx-pod created`.
 
-Checking our work:
+Checking your work:
 ```bash
 kubectl get pod --namespace imperative -o wide
 ```
@@ -760,7 +760,7 @@ Create the `declarative` Namespace:
 kubectl create namespace declarative --dry-run=client --output=yaml > declarative-ns.yaml
 ```
 
-Checking our work:
+Checking your work:
 ```bash
 cat declarative-ns.yaml
 ```
@@ -792,7 +792,7 @@ $ kubectl create -f declarative-ns.yaml
 namespace/declarative created
 ```
 
-Checking our work:
+Checking your work:
 ```bash
 kubectl get ns
 ```
@@ -824,11 +824,12 @@ Say you've been presented with the following request:
 
 You can use the *imperative* command `kubectl run nginx-pod` with the `--dry-run=client` and `--output=yaml` swiches, and redirect the output into a file, like you did when you created the `declarative` Namespace.
 
+Create the `nginx-pod.yaml` manifest file:
 ```bash
 kubectl run nginx-pod --image nginx:latest --namespace declarative --port=80 --dry-run=client --output=yaml > nginx-pod.yaml
 ```
 
-Checking our work:
+Checking your work:
 ```bash
 cat nginx-pod.yaml
 ```
@@ -857,13 +858,16 @@ spec:
 status: {}
 ```
 
+You have a Pod manifest!
+
+Create the Pod, using the manifest:
 ```bash
 kubectl create -f nginx-pod.yaml
 ```
 
 You should get `pod/nginx-pod created`.
 
-Checking our work:
+Checking your work:
 ```bash
 kubectl get pod --namespace declarative -o wide
 ```
@@ -914,9 +918,7 @@ Commercial support is available at
 
 The NGINX web server in our `nginx-pod` Pod responds with the default web page. Everything appears to be working as expected.
 
-
-
-***Transition***
+***You created a Pod manifest, quickly and easily, using the `kubectl` command!  Let's build on this and try a Deployment.***
 
 ## Creating Deployment Manifests Using the `kubectl create deploy` Command
 
@@ -924,8 +926,9 @@ The NGINX web server in our `nginx-pod` Pod responds with the default web page. 
 
 [Kubernetes: ReplicaSet](https://kubernetes.io/docs/concepts/workloads/controllers/replicaset/)
 
+A more typical way to manage Pods uses ReplicaSets, managed by Deployments.  This approach gives you more control over scaling, upgrades and more.  As the complexity and number of objects increases, manifests get larger.  Using the *imperative* to *declarative* approach to create manifests becomes very attractive here.
 
-
+To create a Deployment *imperatively*, use the `kubectl create deploy` command:
 ```bash
 kubectl create deploy --help
 ```
@@ -942,13 +945,13 @@ deployment, deploy
 Examples:
   # Create a deployment named my-dep that runs the busybox image
   kubectl create deployment my-dep --image=busybox
-  
+
   # Create a deployment with a command
   kubectl create deployment my-dep --image=busybox -- date
-  
+
   # Create a deployment named my-dep that runs the nginx image with 3 replicas
   kubectl create deployment my-dep --image=nginx --replicas=3
-  
+
   # Create a deployment named my-dep that runs the busybox image and expose port
 5701
   kubectl create deployment my-dep --image=busybox --port=5701
@@ -1014,14 +1017,16 @@ Use "kubectl options" for a list of global command-line options (applies to all
 commands).
 ```
 
+Say you've been presented with the following request, for a new Namespace:
+
 ***Create a YAML manifest for a Namespace, named `my-nginx-namespace` in a file named `my-nginx-namespace.yaml`.***
 
-Create the `my-nginx-deployment` namespace:
+Create the `my-nginx-deployment` namespace manifest:
 ```bash
 kubectl create namespace my-nginx-namespace --dry-run=client --output=yaml > my-nginx-namespace.yaml
 ```
 
-Checking our work:
+Checking your work:
 ```bash
 cat my-nginx-namespace.yaml
 ```
@@ -1039,12 +1044,18 @@ spec: {}
 status: {}
 ```
 
+You now have a manifest for the `my-nginx-namespace` Namespace.  You're going to hold on to this for a minute.
+
+Say you've also been presented with the following request, for a new Deployment:
+
 ***Create a YAML manifest for a Deployment, named `my-nginx-deployment`, using the `nginx-latest` container image, in the `my-nginx-namespace` namespace, with 3 replicas, exposing port 80, in a file named `my-nginx-deployment.yaml`.***
 
+Create the `my-nginx-deployment` Deployment manifest:
 ```bash
 kubectl create deployment my-nginx-deployment --image=nginx:latest --namespace my-nginx-namespace --replicas=3 --port=80 --dry-run=client --output=yaml > my-nginx-deployment.yaml
 ```
 
+Checking your work:
 ```bash
 cat my-nginx-deployment.yaml
 ```
@@ -1082,6 +1093,9 @@ spec:
 status: {}
 ```
 
+You now have a manifest for the `my-nginx-deployment` Deployment.  You can now deploy your Namespace and Deployment manifests to Kubernetes.
+
+Deploy the Namespace, then the Deployment manifest:
 ```bash
 kubectl create -f my-nginx-namespace.yaml ; kubectl create -f my-nginx-deployment.yaml
 ```
@@ -1094,6 +1108,7 @@ namespace/my-nginx-namespace created
 deployment.apps/my-nginx-deployment created
 ```
 
+Checking your work:
 ```bash
 kubectl get all -n my-nginx-namespace
 ```
@@ -1114,6 +1129,9 @@ NAME                                            DESIRED   CURRENT   READY   AGE
 replicaset.apps/my-nginx-deployment-9cbcd46b4   3         3         3       55s
 ```
 
+You can see that you have a total of three Pods (replica 3), managed by a Replica set, managed by a Deployment.  Everything lives in the `my-nginx-namespace` Namespace.  Check the labels on your Pods.
+
+Show Pod labels for all Pods in the `my-nginx-namespace` Namespace:
 ```bash
 kubectl get pods -o wide -n my-nginx-namespace --show-labels
 ```
@@ -1126,6 +1144,8 @@ my-nginx-deployment-9cbcd46b4-42n2q   1/1     Running   0          20h   192.168
 my-nginx-deployment-9cbcd46b4-7nmn8   1/1     Running   0          20h   192.168.126.204   worker-node-01     <none>           <none>            app=my-nginx-deployment,pod-template-hash=9cbcd46b4
 my-nginx-deployment-9cbcd46b4-xt89j   1/1     Running   0          20h   192.168.126.203   worker-node-01     <none>           <none>            app=my-nginx-deployment,pod-template-hash=9cbcd46b4
 ```
+
+You can see that all the Pods have the `app=my-nginx-deployment` label applied, by the Deployment.
 
 Test using `curl`, replace with any of your three pods; IP addresses:
 ```bash
@@ -1163,9 +1183,7 @@ Commercial support is available at
 
 *Repeat as desired, with the other IP addresses.*
 
-The NGINX web server in our `nginx-pod` Pods respond with the default web page. Everything appears to be working as expected with our `my-nginx-deployment` deployment.
-
-
+The NGINX web servers in our `my-nginx-deployment` Pods respond with the default web page. Everything appears to be working as expected with our `my-nginx-deployment` deployment.
 
 ***Transition***
 
