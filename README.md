@@ -1732,7 +1732,7 @@ NAME                            DESIRED   CURRENT   READY   AGE
 my-nginx-deployment-9cbcd46b4   3         3         3       21h
 ```
 
-Why isn't the ReplicaSet scaling? Because the Deployment manages the ReplicaSet. We need to scale the Deployment, not the ReplicaSet.
+Why isn't the ReplicaSet scaling? Because the **Deployment** manages the ReplicaSet. We need to scale the Deployment, not the ReplicaSet.
 
 
 ```bash
@@ -1881,7 +1881,7 @@ replicaset.apps/my-nginx-deployment-9cbcd46b4   10        10        10      21h
 
 Checking the `my-nginx-service`, using `curl`:
 ```bash
-curl http://10.111.212.138:8888
+curl http://<SVC_IP>:<SVC_PORT>
 ```
 
 **Sample Output:**
