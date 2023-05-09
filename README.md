@@ -2911,15 +2911,9 @@ Use the following **practice exercises** to test the skills you learned in this 
 
 ### Exercise 9
 
-***Another exercise***
-
-[Exercise 9: Solution](solutions/solution-exercise-9.md)
-
-### Exercise 10
-
 ***Clean up everything you created. Verify your work.***
 
-[Exercise 10: Solution](solutions/solution-exercise-10.md)
+[Exercise 9: Solution](solutions/solution-exercise-9.md)
 
 ***Transition***
 
