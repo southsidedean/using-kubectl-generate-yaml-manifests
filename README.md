@@ -1560,8 +1560,9 @@ Commercial support is available at
 
 [Kubernetes: Deployments](https://kubernetes.io/docs/concepts/workloads/controllers/deployment/)
 
+Managing Pods via ReplicaSets and Deployments enables scaling up and down with ease.
 
-
+List ReplicaSets in the `my-nginx-namespace` Namespace:
 ```bash
 kubectl get rs -n my-nginx-namespace
 ```
@@ -1574,6 +1575,7 @@ NAME                            DESIRED   CURRENT   READY   AGE
 my-nginx-deployment-9cbcd46b4   3         3         3       21h
 ```
 
+Show more detail on the ReplicaSet:
 ```bash
 kubectl describe rs <YOUR_REPLICA_SET> -n my-nginx-namespace
 ```
