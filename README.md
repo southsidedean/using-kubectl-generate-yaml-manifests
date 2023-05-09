@@ -1189,7 +1189,7 @@ Wouldn't it be nice if you didn't have to access the NGINX server pods by a bunc
 
 ***Let's see how you can create a manifest for a Service, imperatively!***
 
-## Creating a Service Manifest Using the `kubectl create service` and `kubectl set selector` Commands
+## Creating a Service Manifest Using the `kubectl` Command
 
 [Kubernetes: Service](https://kubernetes.io/docs/concepts/services-networking/service/)
 
@@ -1197,9 +1197,18 @@ Wouldn't it be nice if you didn't have to access the NGINX server pods by a bunc
 
 [Kubernetes: Managing Kubernetes Objects Using Imperative Commands](https://kubernetes.io/docs/tasks/manage-kubernetes-objects/imperative-command/)
 
+In order to simplify access to the Pods in our `my-nginx-deployment` Deployment, we're going to create a Service:
 
+***Create a YAML manifest for a Service, named `my-nginx-service`, of type `clusterip`, in the `my-nginx-namespace` namespace, exposed on port 8888, in a file named `my-nginx-service.yaml`.  Use the `app=my-nginx-deployment` label as a Selector for your Service.***
+
+**This request has two parts:**
+
+- Create the Service manifest (`kubectl create service clusterip`)
+- Add a Selector to the Service manifest (`kubectl set selector`)
 
 The Pods have been labeled with the `app=my-nginx-deployment` label, so you can use that as a Selector for your Service.
+
+Before you get started, take an inventory of the Services on your cluster.
 
 List all Services:
 ```bash
@@ -1215,7 +1224,11 @@ default       kubernetes   ClusterIP   10.96.0.1    <none>        443/TCP       
 kube-system   kube-dns     ClusterIP   10.96.0.10   <none>        53/UDP,53/TCP,9153/TCP   7d4h
 ```
 
+*Let's take a look at those commands.*
 
+### The `kubectl create service` Command
+
+You can use the `kubectl create service` command to create a Service manifest.
 
 Take a look at the help information for the `kubectl create service` command:
 ```bash
@@ -1245,18 +1258,14 @@ Use "kubectl options" for a list of global command-line options (applies to all
 commands).
 ```
 
-Say you've also been presented with the following request, for a new Service:
+**You'll have to specify a Service type of:**
 
-***Create a YAML manifest for a Service, named `my-nginx-service`, of type `clusterip`, in the `my-nginx-namespace` namespace, exposed on port 8888, in a file named `my-nginx-service.yaml`.  Use the `app=my-nginx-deployment` label as a Selector for your Service.***
+- ClusterIP
+- ExternalName
+- LoadBalancer
+- NodePort
 
-**This request has two parts:**
-
-- Create the Service
-- Add a Selector
-
-You can do this by using an *imperative* `kubectl create service clusterip` command to create the Service, then *pipe* the output of that command (the YAML Service manifest) into the `kubectl set selector` command to add the `app=my-nginx-deployment` selector to the manifest, then redirect that output to a file named `my-nginx-service.yaml`.
-
-Let's take a look at those commands.
+We're going to create a ClusterIP Service.  Let's take a closer look at the `kubectl create service clusterip` command.
 
 Help information on the `kubectl create service clusterip` command:
 ```bash
@@ -1322,6 +1331,10 @@ Usage:
 
 Use "kubectl options" for a list of global command-line options (applies to all commands).
 ```
+
+### The `kubectl set selector` Command
+
+
 
 Help information on the `kubectl set selector` command:
 ```bash
@@ -1392,6 +1405,21 @@ Usage:
 Use "kubectl options" for a list of global command-line options (applies to all commands).
 ```
 
+### Creating a Service Manifest Using the `kubectl create service` and `kubectl set selector` Commands
+
+In order to simplify access to the Pods in our `my-nginx-deployment` Deployment, we're going to create a Service:
+
+***Create a YAML manifest for a Service, named `my-nginx-service`, of type `clusterip`, in the `my-nginx-namespace` namespace, exposed on port 8888, in a file named `my-nginx-service.yaml`.  Use the `app=my-nginx-deployment` label as a Selector for your Service.***
+
+**This request has two parts:**
+
+- Create the Service manifest
+- Add a Selector to the Service manifest
+
+You can do this by using an *imperative* `kubectl create service clusterip` command to create the Service, then *pipe* the output of that command (the YAML Service manifest) into the `kubectl set selector` command to add the `app=my-nginx-deployment` selector to the manifest, then redirect that output to a file named `my-nginx-service.yaml`.
+
+The Pods have been labeled with the `app=my-nginx-deployment` label, so you can use that as a Selector for your Service.
+
 **Give it a try!**
 
 Create the Service manifest and add the Selector:
@@ -1429,6 +1457,17 @@ status:
   loadBalancer: {}
 ```
 
+So, in one command, we created the Service manifest, added the Selector (as shown below) and wrote this manifest to a file.
+
+**Selector:**
+```yaml
+  selector:
+    app: my-nginx-deployment
+```
+
+Now that you have a manifest, you're ready to create your Service.
+
+Create the `my-nginx-service` Service from the manifest file:
 ```bash
 kubectl create -f my-nginx-service.yaml
 ```
@@ -1440,7 +1479,7 @@ $ kubectl create -f my-nginx-service.yaml
 service/my-nginx-service created
 ```
 
-
+Checking your work:
 ```bash
 kubectl get service -A
 ```
@@ -1454,7 +1493,9 @@ kube-system          kube-dns           ClusterIP   10.96.0.10       <none>     
 my-nginx-namespace   my-nginx-service   ClusterIP   10.111.212.138   <none>        8888/TCP                 6s
 ```
 
+You can see the `my-nginx-namespace` Namespace, it's IP address and that it's available on port 8888.
 
+List all objects in the `my-nginx-namespace` Namespace:
 ```bash
 kubectl get all -n my-nginx-namespace
 ```
@@ -1611,16 +1652,16 @@ guaranteed that the precondition holds true when the scale is sent to the server
 Examples:
   # Scale a replica set named 'foo' to 3
   kubectl scale --replicas=3 rs/foo
-  
+
   # Scale a resource identified by type and name specified in "foo.yaml" to 3
   kubectl scale --replicas=3 -f foo.yaml
-  
+
   # If the deployment named mysql's current size is 2, scale mysql to 3
   kubectl scale --current-replicas=2 --replicas=3 deployment/mysql
-  
+
   # Scale multiple replication controllers
   kubectl scale --replicas=5 rc/foo rc/bar rc/baz
-  
+
   # Scale stateful set named 'web' to 3
   kubectl scale --replicas=3 statefulset/web
 
