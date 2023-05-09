@@ -1552,7 +1552,7 @@ Commercial support is available at
 </html>
 ```
 
-***It works!  Now you can access the NGINX web servers in your Pods with one IP address and port.***
+***It works!  Now you can access the NGINX web servers in your Pods via a single IP address and port.***
 
 ## Scaling a Deployment/ReplicaSet Using the `kubectl scale` Command
 
@@ -1609,6 +1609,9 @@ Pod Template:
 Events:           <none>
 ```
 
+By using `kubectl describe`, you get a summary of all the ReplicaSet's important information.  Let's take a look at the `my-nginx-namespace` Namespace.
+
+Show all the objects in the `my-nginx-namespace` Namespace:
 ```bash
 kubectl get all -n my-nginx-namespace
 ```
@@ -1632,6 +1635,9 @@ NAME                                            DESIRED   CURRENT   READY   AGE
 replicaset.apps/my-nginx-deployment-9cbcd46b4   3         3         3       21h
 ```
 
+There are currently three replicas of our Deployment's Pods.  What if we wanted to change that?  We can adjust the number of Pod replicas using the `kubectl scale` command.
+
+Retrieve information on the `kubectl scale` command:
 ```bash
 kubectl scale --help
 ```
@@ -1722,7 +1728,9 @@ Usage:
 Use "kubectl options" for a list of global command-line options (applies to all commands).
 ```
 
+Let's see what happens when we scale our ReplicaSet to ten replicas.
 
+Scale ReplicaSet to ten replicas:
 ```bash
 kubectl scale --replicas=10 rs <YOUR_REPLICA_SET>
 ```
@@ -1734,9 +1742,9 @@ NAME                            DESIRED   CURRENT   READY   AGE
 my-nginx-deployment-9cbcd46b4   3         3         3       21h
 ```
 
-Why isn't the ReplicaSet scaling? Because the **Deployment** manages the ReplicaSet. We need to scale the Deployment, not the ReplicaSet.
+Why isn't the ReplicaSet scaling? Because the **Deployment** manages the ReplicaSet. We need to scale the Deployment, not the ReplicaSet.  Once we issue the command to scale, the Deployment overrides our request, keeping the replica count at three.  Let's try scaling the Deployment.
 
-
+Scale Deployment to ten replicas:
 ```bash
 kubectl scale --replicas=10 deployment my-nginx-deployment -n my-nginx-namespace
 ```
@@ -1748,6 +1756,9 @@ $ kubectl scale --replicas=10 deployment my-nginx-deployment -n my-nginx-namespa
 deployment.apps/my-nginx-deployment scaled
 ```
 
+Now that we've scaled our Deployment, let's take a look at the `my-nginx-namespace` Namespace again.
+
+Show all the objects in the `my-nginx-namespace` Namespace:
 ```bash
 kubectl get all -n my-nginx-namespace
 ```
@@ -1778,6 +1789,9 @@ NAME                                            DESIRED   CURRENT   READY   AGE
 replicaset.apps/my-nginx-deployment-9cbcd46b4   10        10        10      21h
 ```
 
+Congratulations!  You've scaled your Deployment to ten replicas, *imperatively*.  This works just fine, but what happens if you come back and re-apply your Deployment manifest?
+
+Re-apply Depolyment manifest:
 ```bash
 kubectl apply -f my-nginx.deployment.yaml
 ```
@@ -1789,6 +1803,9 @@ $ kubectl apply -f my-nginx-deployment.yaml
 deployment.apps/my-nginx-deployment configured
 ```
 
+Now that you've re-applied your Deployment manifest, take a look at the `my-nginx-namespace` Namespace.
+
+Show all the objects in the `my-nginx-namespace` Namespace:
 ```bash
 kubectl get all -n my-nginx-namespace
 ```
@@ -1812,6 +1829,9 @@ NAME                                            DESIRED   CURRENT   READY   AGE
 replicaset.apps/my-nginx-deployment-9cbcd46b4   3         3         3       21h
 ```
 
+You're back to three Pod replicas, as you would expect.  Checking the Deployment manifest confirms this.
+
+Check the number of replicas in the Deployment manifest:
 ```bash
 grep -i replica my-nginx-deployment.yaml
 ```
@@ -1823,11 +1843,14 @@ $ grep -i replica my-nginx-deployment.yaml
   replicas: 3
 ```
 
+Let's change the number of replicas in the Deployment manifest, using the `sed` command.  We'll replace the string `replicas: 3` with the string `replicas: 10`.  You could also use your favorite editor to make the edit in your manifest.
 
+Change the `replicas` string with `sed`:
 ```bash
 sed -i 's/replicas\:\ 3/replicas\:\ 10/g' my-nginx-deployment.yaml
 ```
 
+Checking your work:
 ```bash
 grep -i replica my-nginx-deployment.yaml
 ```
@@ -1839,7 +1862,9 @@ $ grep -i replica my-nginx-deployment.yaml
   replicas: 10
 ```
 
+Now that you've changed the number of replicas in your manifest, apply your changes.
 
+Apply the mainfest changes:
 ```bash
 kubectl apply -f my-nginx-deployment.yaml
 ```
@@ -1851,6 +1876,7 @@ $ kubectl apply -f my-nginx-deployment.yaml
 deployment.apps/my-nginx-deployment configured
 ```
 
+Checking your work:
 ```bash
 kubectl get all -n my-nginx-namespace
 ```
@@ -1880,6 +1906,8 @@ deployment.apps/my-nginx-deployment   10/10   10           10          21h
 NAME                                            DESIRED   CURRENT   READY   AGE
 replicaset.apps/my-nginx-deployment-9cbcd46b4   10        10        10      21h
 ```
+
+You can see the Deployment has been scaled to ten replicas.  Let's verify the functionality of our Service using `curl`.
 
 Checking the `my-nginx-service`, using `curl`:
 ```bash
