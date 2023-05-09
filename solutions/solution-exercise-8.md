@@ -14,7 +14,7 @@
 ### Step
 
 ```bash
-
+kubectl create secret generic top-secret --from-literal=key1=ultra --from-literal=key2=secret --dry-run=client -o yaml > top-secret.yaml
 ```
 
 **Sample Output:**

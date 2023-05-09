@@ -1560,7 +1560,11 @@ Commercial support is available at
 
 [Kubernetes: Deployments](https://kubernetes.io/docs/concepts/workloads/controllers/deployment/)
 
-Managing Pods via ReplicaSets and Deployments enables scaling up and down with ease.
+Managing Pods via ReplicaSets and Deployments enables scaling up and down with ease.  Say you get the following request:
+
+***Scale the `my-nginx-deployment` from 3 Pod replicas to 10 replicas.***
+
+Let's confirm the current state of the ReplicaSet for your Deployment.
 
 List ReplicaSets in the `my-nginx-namespace` Namespace:
 ```bash
@@ -2883,13 +2887,13 @@ Use the following **practice exercises** to test the skills you learned in this 
 
 ### Exercise 5
 
-***Create a service***
+***Create a YAML manifest for a Service, named `my-nginx-service`, of type `clusterip`, in the `my-nginx-namespace` namespace, exposed on port 8888, in a file named `my-nginx-service.yaml`.  Use the `app=my-nginx-deployment` label as a Selector for your Service.***
 
 [Exercise 5: Solution](solutions/solution-exercise-5.md)
 
 ### Exercise 6
 
-***Scale the deployment***
+***Scale the `my-nginx-deployment`, declaratively, from 3 Pod replicas to 10 replicas.***
 
 [Exercise 6: Solution](solutions/solution-exercise-6.md)
 
@@ -2901,7 +2905,7 @@ Use the following **practice exercises** to test the skills you learned in this 
 
 ### Exercise 8
 
-***Another exercise***
+***Create a manifest, in a file named `top-secret.yaml` for a Secret named `top-secret` with `key1=ultra` and `key2=secret`.***
 
 [Exercise 8: Solution](solutions/solution-exercise-8.md)
 
