@@ -1334,7 +1334,7 @@ Use "kubectl options" for a list of global command-line options (applies to all 
 
 ### The `kubectl set selector` Command
 
-
+We're going to use the `app=my-nginx-deployment` label as a Selector to tell the Service which Pods to send the traffic to.
 
 Help information on the `kubectl set selector` command:
 ```bash
@@ -1345,19 +1345,14 @@ kubectl set selector --help
 ```bash
 $ kubectl set selector --help
 
-Set the selector on a resource. Note that the new selector will overwrite the old selector if the resource had one prior
-to the invocation of 'set selector'.
+Set the selector on a resource. Note that the new selector will overwrite the old selector if the resource had one prior to the invocation of 'set selector'.
 
- A selector must begin with a letter or number, and may contain letters, numbers, hyphens, dots, and underscores, up to
-63 characters. If --resource-version is specified, then updates will use this resource version, otherwise the existing
-resource-version will be used. Note: currently selectors can only be set on Service objects.
+ A selector must begin with a letter or number, and may contain letters, numbers, hyphens, dots, and underscores, up to 63 characters. If --resource-version is specified, then updates will use this resource version, otherwise the existing resource-version will be used. Note: currently selectors can only be set on Service objects.
 
 Examples:
   # Set the labels and selector before creating a deployment/service pair
-  kubectl create service clusterip my-svc --clusterip="None" -o yaml --dry-run=client | kubectl set selector --local -f
-- 'environment=qa' -o yaml | kubectl create -f -
-  kubectl create deployment my-dep -o yaml --dry-run=client | kubectl label --local -f - environment=qa -o yaml |
-kubectl create -f -
+  kubectl create service clusterip my-svc --clusterip="None" -o yaml --dry-run=client | kubectl set selector --local -f - 'environment=qa' -o yaml | kubectl create -f -
+  kubectl create deployment my-dep -o yaml --dry-run=client | kubectl label --local -f - environment=qa -o yaml | kubectl create -f -
 
 Options:
     --all=false:
@@ -1404,6 +1399,8 @@ Usage:
 
 Use "kubectl options" for a list of global command-line options (applies to all commands).
 ```
+
+***So, how do we put these two commands together?***
 
 ### Creating a Service Manifest Using the `kubectl create service` and `kubectl set selector` Commands
 
@@ -1465,7 +1462,7 @@ So, in one command, we created the Service manifest, added the Selector (as show
     app: my-nginx-deployment
 ```
 
-Now that you have a manifest, you're ready to create your Service.
+Now that you have a Service manifest, you're ready to create your Service.
 
 Create the `my-nginx-service` Service from the manifest file:
 ```bash
@@ -1493,7 +1490,7 @@ kube-system          kube-dns           ClusterIP   10.96.0.10       <none>     
 my-nginx-namespace   my-nginx-service   ClusterIP   10.111.212.138   <none>        8888/TCP                 6s
 ```
 
-You can see the `my-nginx-namespace` Namespace, it's IP address and that it's available on port 8888.
+You can see the `my-nginx-service` Service, it's IP address and that it's available on port 8888.  Let's take a look at everything in the `my-nginx-namespace` Namespace.
 
 List all objects in the `my-nginx-namespace` Namespace:
 ```bash
@@ -1519,10 +1516,11 @@ NAME                                            DESIRED   CURRENT   READY   AGE
 replicaset.apps/my-nginx-deployment-9cbcd46b4   3         3         3       20h
 ```
 
+You can see the `my-nginx-service` Service alongside the Deployment, ReplicaSet and the three Pods.  Let's see if the Service works.
 
 Test using `curl`, via the Service IP address and port:
 ```bash
-curl http://10.111.212.138:8888
+curl http://<SVC_IP>:<SVC_PORT>
 ```
 
 **Sample Output:**
@@ -1554,9 +1552,7 @@ Commercial support is available at
 </html>
 ```
 
-
-
-***Transition***
+***It works!  Now you can access the NGINX web servers in your Pods with one IP address and port.***
 
 ## Scaling a Deployment/ReplicaSet Using the `kubectl scale` Command
 
