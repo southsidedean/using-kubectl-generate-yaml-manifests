@@ -1,5 +1,5 @@
 # Using `kubectl` to Generate YAML Manifests
-**Tom Dean - 5/8/2023**
+**Tom Dean - 5/16/2023**
 
 ## Introduction
 
@@ -42,6 +42,8 @@ In this tutorial, you're not only going to learn about the `kubectl` command, yo
 [Kubernetes: ReplicaSet](https://kubernetes.io/docs/concepts/workloads/controllers/replicaset/)
 
 [Kubernetes: Deployments](https://kubernetes.io/docs/concepts/workloads/controllers/deployment/)
+
+[Kubernetes: Logging Architecture](https://kubernetes.io/docs/concepts/cluster-administration/logging/)
 
 ## Prerequisites
 
@@ -1959,7 +1961,7 @@ Everything's working!
 
 Labels and Selectors play an important role in Kubernetes, so be sure to read the [Labels and Selectors](https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/) documentation and know the things of value contained within.
 
-
+Let's take a look at some of the ways we can work with Labels.  You should be able to identify the labels applied to an object.  A good example of this can be demonstrated by examining the labels on out Pods.
 
 Show labels on pods in the `my-nginx-namespace` namespace:
 ```bash
@@ -1982,7 +1984,9 @@ my-nginx-deployment-9cbcd46b4-sz27h   1/1     Running   0          81m   app=my-
 my-nginx-deployment-9cbcd46b4-v8bp5   1/1     Running   0          81m   app=my-nginx-deployment,pod-template-hash=9cbcd46b4
 ```
 
+You can use the `kubectl label` command to manipulate labels on Kubernetes resources.
 
+Show help information for `kubectl label`:
 ```bash
 kubectl label --help
 ```
@@ -2088,6 +2092,9 @@ Usage:
 Use "kubectl options" for a list of global command-line options (applies to all commands).
 ```
 
+So, if you wanted to add a label of `type=webserver` to all the Pods in the `my-nginx-namespace` Namespace, you would use the following example.
+
+Label Pods:
 ```bash
 kubectl label pods --all type=webserver -n my-nginx-namespace
 ```
@@ -2108,6 +2115,7 @@ pod/my-nginx-deployment-9cbcd46b4-sz27h labeled
 pod/my-nginx-deployment-9cbcd46b4-v8bp5 labeled
 ```
 
+Checking your work:
 ```bash
 kubectl get pods -n my-nginx-namespace --show-labels
 ```
@@ -2129,6 +2137,9 @@ my-nginx-deployment-9cbcd46b4-sz27h   1/1     Running   0          98m    app=my
 my-nginx-deployment-9cbcd46b4-v8bp5   1/1     Running   0          98m    app=my-nginx-deployment,pod-template-hash=9cbcd46b4,type=webserver
 ```
 
+You can see the Pods now have an additional label of `type=webserver`.  It's relatively straightforward to add labels, but how do you remove a label?  You use the same command, but specify the label, without the value, with a `-` appended, like the following example.
+
+Remove the `type=webserver` labels:
 ```bash
 kubectl label pods --all type- -n my-nginx-namespace
 ```
@@ -2149,6 +2160,7 @@ pod/my-nginx-deployment-9cbcd46b4-sz27h unlabeled
 pod/my-nginx-deployment-9cbcd46b4-v8bp5 unlabeled
 ```
 
+Checking your work:
 ```bash
 kubectl get pods -n my-nginx-namespace --show-labels
 ```
@@ -2170,6 +2182,9 @@ my-nginx-deployment-9cbcd46b4-sz27h   1/1     Running   0          102m   app=my
 my-nginx-deployment-9cbcd46b4-v8bp5   1/1     Running   0          102m   app=my-nginx-deployment,pod-template-hash=9cbcd46b4
 ```
 
+You can see the `type=webserver` labels have been removed from the Pods.  How do you examine the labels on other resources?  Let's take a look!
+
+Show the labels on *all* the objects in the `my-nginx-namespace` Namespace:
 ```bash
 kubectl get all -n my-nginx-namespace --show-labels
 ```
@@ -2200,6 +2215,11 @@ NAME                                            DESIRED   CURRENT   READY   AGE 
 replicaset.apps/my-nginx-deployment-9cbcd46b4   10        10        10      23h   app=my-nginx-deployment,pod-template-hash=9cbcd46b4
 ```
 
+Everything has the `app=my-nginx-deployment` label, except for the Service, which has the `app=my-nginx-service` label.
+
+You can apply labels to other resources, like Deployments.  Let's try it with your Deployment.
+
+Label deployment:
 ```bash
 kubectl label deploy my-nginx-deployment type=webserver -n my-nginx-namespace
 ```
@@ -2211,6 +2231,7 @@ $ kubectl label deploy my-nginx-deployment type=webserver -n my-nginx-namespace
 deployment.apps/my-nginx-deployment labeled
 ```
 
+Checking your work:
 ```bash
 kubectl get all -n my-nginx-namespace --show-labels
 ```
@@ -2241,6 +2262,9 @@ NAME                                            DESIRED   CURRENT   READY   AGE 
 replicaset.apps/my-nginx-deployment-9cbcd46b4   10        10        10      23h   app=my-nginx-deployment,pod-template-hash=9cbcd46b4
 ```
 
+You can see the `type=webserver` label has been applied to the Deployment.  Let's add the label to the rest of the items in the Namespace.
+
+Label Pods and ReplicaSets in `my-nginx-namespace`:
 ```bash
 kubectl label pods,rs --all type=webserver -n my-nginx-namespace
 ```
@@ -2262,6 +2286,7 @@ pod/my-nginx-deployment-9cbcd46b4-v8bp5 labeled
 replicaset.apps/my-nginx-deployment-9cbcd46b4 labeled
 ```
 
+Checking your work:
 ```bash
 kubectl get all -n my-nginx-namespace --show-labels
 ```
@@ -2291,6 +2316,9 @@ NAME                                            DESIRED   CURRENT   READY   AGE 
 replicaset.apps/my-nginx-deployment-9cbcd46b4   10        10        10      23h   app=my-nginx-deployment,pod-template-hash=9cbcd46b4,type=webserver
 ```
 
+Everything in the `my-nginx-namespace` Namespace now has the `type=webserver` label.  How can you remove the label?  Just like before, specify the label name without the value, with a `-` following the label.
+
+Remove the label from all Pods, ReplicaSets and Deployments in `my-nginx-namespace`:
 ```bash
 kubectl label pods,rs,deploy --all type- -n my-nginx-namespace
 ```
@@ -2313,6 +2341,7 @@ replicaset.apps/my-nginx-deployment-9cbcd46b4 unlabeled
 deployment.apps/my-nginx-deployment unlabeled
 ```
 
+Checking your work:
 ```bash
 kubectl get all -n my-nginx-namespace --show-labels
 ```
@@ -2343,6 +2372,11 @@ NAME                                            DESIRED   CURRENT   READY   AGE 
 replicaset.apps/my-nginx-deployment-9cbcd46b4   10        10        10      23h   app=my-nginx-deployment,pod-template-hash=9cbcd46b4
 ```
 
+The `type=webserver` label has been removed from everything in the `my-nginx-namespace` Namespace.
+
+You can apply labels to non-namespaced resources, like nodes.  Let's take a look at the labels on your nodes.
+
+Show labels on nodes:
 ```bash
 kubectl get nodes --show-labels
 ```
@@ -2356,16 +2390,17 @@ control-plane-01   Ready    control-plane   8d    v1.26.1   beta.kubernetes.io/a
 worker-node-01     Ready    <none>          8d    v1.26.1   beta.kubernetes.io/arch=amd64,beta.kubernetes.io/os=linux,kubernetes.io/arch=amd64,kubernetes.io/hostname=worker-node-01,kubernetes.io/os=linux
 ```
 
+You can see some standard labels Kubernetes has applied to our nodes.  If you want to add labels to the nodes, it's just like adding labels to other resources.
+
+***Again, labels and Selectors play an important role in Kubernetes, so be sure to read the [Labels and Selectors](https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/) documentation and know the things of value contained within.***
+
+## Checking Logs Using `kubectl logs`
+
+[Kubernetes: Logging Architecture](https://kubernetes.io/docs/concepts/cluster-administration/logging/)
 
 
-Again, labels and Selectors play an important role in Kubernetes, so be sure to read the [Labels and Selectors](https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/) documentation and know the things of value contained within.
 
-***Transition***
-
-## Checking Logs Using `kubectl`
-
-
-
+Help information for `kubectl logs`:
 ```bash
 kubectl logs --help
 ```
@@ -2468,10 +2503,9 @@ Usage:
 Use "kubectl options" for a list of global command-line options (applies to all commands).
 ```
 
-```bash
-kubectl logs my-nginx-deployment-9cbcd46b4-42n2q -n my-nginx-namespace
-```
 
+
+List Pods in `my-nginx-namespace`:
 ```bash
 kubectl get pods -n my-nginx-namespace
 ```
@@ -2492,6 +2526,9 @@ my-nginx-deployment-9cbcd46b4-sz27h   1/1     Running   0          156m
 my-nginx-deployment-9cbcd46b4-v8bp5   1/1     Running   0          156m
 ```
 
+
+
+Checking Pod logs for the `my-nginx-deployment-9cbcd46b4-42n2q` Pod:
 ```bash
 kubectl logs my-nginx-deployment-9cbcd46b4-42n2q -n my-nginx-namespace
 ```
