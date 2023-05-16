@@ -3,15 +3,15 @@
 
 ## Introduction
 
-
+This exercise tests your ability to create both a **Namespace** and a **Pod** manifest from existing Kubernetes objects.
 
 ## Exercise
 
-***Clean up everything you created. Verify your work.***
+***Create a Namespace manifest for the `apache-imperative` Namespace and a Pod manifest for the `apache-pod` Pod, using the existing objects. Verify your work.***
 
 ## Solution
 
-### Step
+### Step 1: Create the Namespace Manifest
 
 ```bash
 
@@ -22,7 +22,25 @@
 
 ```
 
-### Step
+```bash
+
+```
+
+**Sample Output:**
+```bash
+
+```
+
+### Step 2: Create the Pod Manifest
+
+```bash
+
+```
+
+**Sample Output:**
+```bash
+
+```
 
 ```bash
 

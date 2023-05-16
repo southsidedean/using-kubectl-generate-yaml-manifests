@@ -3,7 +3,7 @@
 
 ## Introduction
 
-This exercise tests your ability to create both a **namespace** and a **pod** imperatively.
+This exercise tests your ability to create both a **Namespace** and a **Pod** imperatively.
 
 ## Exercise
 
@@ -15,12 +15,14 @@ This exercise tests your ability to create both a **namespace** and a **pod** im
 
 
 ```bash
-
+kubectl create namespace apache-imperative
 ```
 
 **Sample Output:**
 ```bash
+$ kubectl create namespace apache-imperative
 
+namespace/apache-imperative created
 ```
 
 
@@ -28,14 +30,42 @@ This exercise tests your ability to create both a **namespace** and a **pod** im
 
 
 ```bash
-
+kubectl run apache-pod --image httpd:latest --namespace apache-imperative --port=80
 ```
 
 **Sample Output:**
 ```bash
+$ kubectl run apache-pod --image httpd:latest --namespace apache-imperative --port=80
 
+pod/apache-pod created
 ```
 
+### Step 3: Check Your Work
+
+
+
+```bash
+kubectl get pod --namespace apache-imperative -o wide
+```
+
+**Sample Output:**
+```bash
+$ kubectl get pod --namespace apache-imperative -o wide
+
+NAME         READY   STATUS    RESTARTS   AGE   IP                NODE               NOMINATED NODE   READINESS GATES
+apache-pod   1/1     Running   0          42s   192.168.173.210   control-plane-01   <none>           <none>
+```
+
+```bash
+curl http://<POD_IP>
+```
+
+**Sample Output:**
+```bash
+$ curl http://192.168.173.210
+
+<html><body><h1>It works!</h1></body></html>
+```
 
 ## Summary
 

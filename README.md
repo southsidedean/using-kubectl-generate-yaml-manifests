@@ -2950,9 +2950,15 @@ Use the following **practice exercises** to test the skills you learned in this 
 
 ### Exercise 9
 
-***Clean up everything you created. Verify your work.***
+***Create a Namespace manifest for the `apache-imperative` Namespace and a Pod manifest for the `apache-pod` Pod, using the existing objects. Verify your work.***
 
 [Exercise 9: Solution](solutions/solution-exercise-9.md)
+
+### Exercise 10
+
+***Clean up everything you created. Verify your work.***
+
+[Exercise 10: Solution](solutions/solution-exercise-10.md)
 
 ***Transition***
 
