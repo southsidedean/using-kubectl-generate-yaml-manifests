@@ -1417,7 +1417,7 @@ You can do this by using an *imperative* `kubectl create service clusterip` comm
 
 The Pods have been labeled with the `app=my-nginx-deployment` label, so you can use that as a Selector for your Service.
 
-**Give it a try!**
+**Let's give it a try!**
 
 Create the Service manifest and add the Selector:
 ```bash
@@ -1454,7 +1454,7 @@ status:
   loadBalancer: {}
 ```
 
-So, in one command, we created the Service manifest, added the Selector (as shown below) and wrote this manifest to a file.
+So, in *one* command, we created the Service manifest (`kubectl create service clusterip my-nginx-service --tcp=8888:80 --namespace my-nginx-namespace --dry-run=client --output=yaml`), added the Selector (`kubectl set selector --local -f - 'app=my-nginx-deployment' --output=yaml`), as shown below, and wrote this manifest to a file (`my-nginx-service.yaml`).
 
 **Selector:**
 ```yaml
@@ -1560,7 +1560,9 @@ Commercial support is available at
 
 [Kubernetes: Deployments](https://kubernetes.io/docs/concepts/workloads/controllers/deployment/)
 
-Managing Pods via ReplicaSets and Deployments enables scaling up and down with ease.  Say you get the following request:
+Managing Pods via ReplicaSets and Deployments enables scaling up and down with ease.  Let's take a look at how it works!
+
+Say you get the following request:
 
 ***Scale the `my-nginx-deployment` from 3 Pod replicas to 10 replicas.***
 
@@ -1732,7 +1734,7 @@ Usage:
 Use "kubectl options" for a list of global command-line options (applies to all commands).
 ```
 
-Let's see what happens when we scale our ReplicaSet to ten replicas.
+Let's see what happens when we scale our ReplicaSet to ten replicas, *imperatively*.
 
 Scale ReplicaSet to ten replicas:
 ```bash
@@ -1746,7 +1748,7 @@ NAME                            DESIRED   CURRENT   READY   AGE
 my-nginx-deployment-9cbcd46b4   3         3         3       21h
 ```
 
-Why isn't the ReplicaSet scaling? Because the **Deployment** manages the ReplicaSet. We need to scale the Deployment, not the ReplicaSet.  Once we issue the command to scale, the Deployment overrides our request, keeping the replica count at three.  Let's try scaling the Deployment.
+Why isn't the ReplicaSet scaling? Because the **Deployment** manages the ReplicaSet. We need to scale the Deployment, not the ReplicaSet.  Once we issue the command to scale, the Deployment overrides our request, keeping the replica count at three.  Let's try scaling the Deployment, *imperatively*.
 
 Scale Deployment to ten replicas:
 ```bash
@@ -1947,15 +1949,13 @@ Commercial support is available at
 </html>
 ```
 
+Everything's working!
 
-
-***Transition***
+***Scaling our deployment, both imperatively and declaratively makes managing our Deployment fast and easy!***
 
 ## Adding Labels to Kubernetes Objects Using the `kubectl label` Command
 
 [Kubernetes: Labels and Selectors](https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/)
-
-
 
 Labels and Selectors play an important role in Kubernetes, so be sure to read the [Labels and Selectors](https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/) documentation and know the things of value contained within.
 
@@ -1982,6 +1982,8 @@ my-nginx-deployment-9cbcd46b4-sz27h   1/1     Running   0          81m   app=my-
 my-nginx-deployment-9cbcd46b4-v8bp5   1/1     Running   0          81m   app=my-nginx-deployment,pod-template-hash=9cbcd46b4
 ```
 
+
+```bash
 kubectl label --help
 ```
 
