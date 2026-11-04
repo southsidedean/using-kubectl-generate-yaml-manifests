@@ -31,7 +31,7 @@ In this tutorial, you're not only going to learn about the `kubectl` command, yo
 
 [GitHub: cka-d-cluster-builder-lab](https://github.com/southsidedean/cka-d-cluster-builder-lab)
 
-[GitHub: Deploying a Kubernetes In Docker (KIND) Cluster Using Podman on Ubuntu Linux](https://github.com/southsidedean/deploy-kind-using-podman-ubuntu)
+[KIND: Quick Start](https://kind.sigs.k8s.io/docs/user/quick-start/)
 
 [Kubernetes: Managing Kubernetes Objects Using Imperative Commands](https://kubernetes.io/docs/tasks/manage-kubernetes-objects/imperative-command/)
 
@@ -51,15 +51,15 @@ In this tutorial, you're not only going to learn about the `kubectl` command, yo
 
 [GitHub: cka-d-cluster-builder-lab](https://github.com/southsidedean/cka-d-cluster-builder-lab)
 
-[GitHub: Deploying a Kubernetes In Docker (KIND) Cluster Using Podman on Ubuntu Linux](https://github.com/southsidedean/deploy-kind-using-podman-ubuntu)
+[KIND: Quick Start](https://kind.sigs.k8s.io/docs/user/quick-start/)
 
-*The examples in this guide come from an Ubuntu Linux 22.04 operating system environment with a two-node Kubernetes 1.26.1 cluster configured with `kubeadm`, using the [`cka-d-cluster-builder-lab`](https://github.com/southsidedean/cka-d-cluster-builder-lab) automation.*
+*The examples in this guide come from an Ubuntu Linux 22.04 operating system environment with a two-node Kubernetes 1.26.1 cluster configured with `kubeadm`, using the [`cka-d-cluster-builder-lab`](https://github.com/southsidedean/cka-d-cluster-builder-lab) automation.  The sample output dates from 2023, so expect some differences on a newer cluster.*
 
 You're going to need a Kubernetes environment to perform the steps in this tutorial.  If you have access to one already, you can use it.  If not, you'll need to create one.  I've provided some resources in the links in this section.
 
 The first link, from the Kubernetes documentation, contains resources detailing several options for cluster installation.
 
-I've also provided links to two of my GitHub repositories with tutorials, one for creating a `kubeadm` cluster using Terraform and KVM ([GitHub: cka-d-cluster-builder-lab](https://github.com/southsidedean/cka-d-cluster-builder-lab)) and a second for creating a Kubernetes In Docker, or KIND, cluster ([GitHub: Deploying a Kubernetes In Docker (KIND) Cluster Using Podman on Ubuntu Linux](https://github.com/southsidedean/deploy-kind-using-podman-ubuntu)).  Either of these will work for this tutorial.
+I've also provided links to two other options, one of my GitHub repositories for creating a `kubeadm` cluster using Terraform and KVM ([GitHub: cka-d-cluster-builder-lab](https://github.com/southsidedean/cka-d-cluster-builder-lab)) and the KIND documentation for creating a Kubernetes In Docker, or KIND, cluster ([KIND: Quick Start](https://kind.sigs.k8s.io/docs/user/quick-start/)).  Either of these will work for this tutorial.
 
 When you have your cluster, check it out. Start with the high-level cluster information.
 
@@ -2563,8 +2563,6 @@ kubectl logs -f -l app=my-nginx-deployment --all-containers=true -n my-nginx-nam
 
 
 
-***Transition***
-
 ## Exporting Running Kubernetes Objects to a Manifest Using the `kubectl get` Command
 
 
@@ -2711,8 +2709,6 @@ kubectl
 ```
 
 
-
-***Transition***
 
 ## Deleting Kubernetes Objects Using `kubectl delete`
 
@@ -2960,11 +2956,11 @@ Use the following **practice exercises** to test the skills you learned in this 
 
 [Exercise 10: Solution](solutions/solution-exercise-10.md)
 
-***Transition***
-
 ## Summary
 
+In this tutorial, you used the `kubectl` command imperatively to create objects directly, and to generate declarative YAML manifests with the `--dry-run=client` and `--output=yaml` switches.  You worked with Namespaces, Pods, Deployments and Services, then scaled and labeled objects, checked logs, exported running objects to manifests, and cleaned up with `kubectl delete`.
 
+The more you practice these commands, the faster you'll get, and on the **CKA** and **CKAD** exams, *every second counts*.  Use the **Practice Exercises** above to keep building those muscles.
 
 Enjoy!
 
